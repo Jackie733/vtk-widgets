@@ -1,0 +1,24 @@
+{
+  "name": "vtk-widget-demo",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.4.37",
+    "@itk-wasm/dicom": "6.0.1",
+    "@itk-wasm/image-io": "1.1.1",
+    "@kitware/vtk.js": "^29.0.0",
+    "itk-wasm": "1.0.0-b.171"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.1.2",
+    "typescript": "^5.5.3",
+    "vite": "^5.4.1",
+    "vue-tsc": "^2.0.29"
+  }
+}
