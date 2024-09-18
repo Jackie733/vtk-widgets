@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
+import LayoutGrid from "./components/LayoutGrid.vue";
+import HeaderModule from "./components/HeaderModule.vue";
+import { DefaultLayoutName, Layouts } from "./config";
+
+const layout = Layouts[DefaultLayoutName];
 </script>
 
 <template>
   <div class="bg-slate-800 w-screen h-screen">
+    <header-module />
     <div class="h-full w-full p-4">
-      <HelloWorld msg="Vite + Vue" />
+      <layout-grid :layout="layout" />
     </div>
   </div>
 </template>
-
-<style scoped></style>

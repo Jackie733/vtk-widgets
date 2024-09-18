@@ -27,7 +27,7 @@ const viewAxis = computed(() => getLPSAxisFromDir(viewDirection.value));
         <vtk-slice-view
           class="vtk-view"
           ref="vtkView"
-          :view-id="id"
+          :view-id="viewId"
           :view-direction="viewDirection"
           :view-up="viewUp"
         ></vtk-slice-view>
