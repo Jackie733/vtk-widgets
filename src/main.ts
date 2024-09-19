@@ -14,11 +14,10 @@ import { FILE_READERS } from './io';
 import './global.css';
 
 initItkWorker();
+registerAllReaders(FILE_READERS);
 
 setPipelineWorkerUrl(itkConfig.pipelineWorkerUrl);
 setPipelinesBaseUrl(itkConfig.imageIOUrl);
-
-registerAllReaders(FILE_READERS);
 
 const pinia = createPinia();
 

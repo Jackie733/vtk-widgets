@@ -1,8 +1,8 @@
-import path from "node:path";
-import { createRequire } from "node:module";
-import { defineConfig, normalizePath } from "vite";
-import vue from "@vitejs/plugin-vue";
-import { viteStaticCopy } from "vite-plugin-static-copy";
+import path from 'node:path';
+import { createRequire } from 'node:module';
+import { defineConfig, normalizePath } from 'vite';
+import vue from '@vitejs/plugin-vue';
+import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 function resolveNodeModulePath(moduleName: string) {
   const require = createRequire(import.meta.url);
@@ -21,76 +21,94 @@ function resolvePath(...args: string[]) {
 }
 
 const rootDir = resolvePath(__dirname);
-const itkConfig = resolvePath(rootDir, "src", "io", "itk", "itkConfig.js");
+const distDir = resolvePath(rootDir, 'dist');
+const itkConfig = resolvePath(rootDir, 'src', 'io', 'itk', 'itkConfig.js');
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    outDir: distDir,
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('vtk.js')) {
+            return 'vtk.js';
+          }
+          if (id.includes('node_modules')) {
+            return 'vendor';
+          }
+          return undefined;
+        },
+      },
+    },
+    sourcemap: true,
+  },
   plugins: [
     vue(),
     viteStaticCopy({
       targets: [
         {
           src: resolvePath(
-            resolveNodeModulePath("itk-wasm"),
-            "dist/pipeline/web-workers/bundles/itk-wasm-pipeline.min.worker.js",
+            resolveNodeModulePath('itk-wasm'),
+            'dist/pipeline/web-workers/bundles/itk-wasm-pipeline.min.worker.js'
           ),
-          dest: "itk",
+          dest: 'itk',
         },
         {
           src: resolvePath(
-            resolveNodeModulePath("@itk-wasm/image-io"),
-            "dist/pipelines/*{.wasm,.js,.zst}",
+            resolveNodeModulePath('@itk-wasm/image-io'),
+            'dist/pipelines/*{.wasm,.js,.zst}'
           ),
-          dest: "itk/image-io",
+          dest: 'itk/image-io',
         },
         {
           src: resolvePath(
-            resolveNodeModulePath("@itk-wasm/dicom"),
-            "dist/pipelines/*{.wasm,.js,.zst}",
+            resolveNodeModulePath('@itk-wasm/dicom'),
+            'dist/pipelines/*{.wasm,.js,.zst}'
           ),
-          dest: "itk/pipelines",
+          dest: 'itk/pipelines',
         },
-        {
-          src: resolvePath(
-            rootDir,
-            "src/io/itk-dicom/emscripten-build/**/dicom*",
-          ),
-          dest: "itk/pipelines",
-        },
-        {
-          src: resolvePath(
-            rootDir,
-            "src/io/resample/emscripten-build/**/resample*",
-          ),
-          dest: "itk/pipelines",
-        },
+        // {
+        //   src: resolvePath(
+        //     rootDir,
+        //     "src/io/itk-dicom/emscripten-build/**/dicom*",
+        //   ),
+        //   dest: "itk/pipelines",
+        // },
+        // {
+        //   src: resolvePath(
+        //     rootDir,
+        //     "src/io/resample/emscripten-build/**/resample*",
+        //   ),
+        //   dest: "itk/pipelines",
+        // },
       ],
     }),
   ],
   resolve: {
     alias: [
       {
-        find: "@",
+        find: '@',
         replacement: rootDir,
       },
       {
-        find: "@src",
-        replacement: resolvePath(rootDir, "src"),
+        find: '@src',
+        replacement: resolvePath(rootDir, 'src'),
       },
       // Patch itk-wasm library code with image-io .wasm file paths
       // itkConfig alias only applies to itk-wasm library code after "npm run build"
       // During "npm run serve", itk-wasm fetches image-io .wasm files from CDN
       {
-        find: "../itkConfig.js",
+        find: '../itkConfig.js',
         replacement: itkConfig,
       },
       {
-        find: "../../itkConfig.js",
+        find: '../../itkConfig.js',
         replacement: itkConfig,
       },
     ],
   },
   optimizeDeps: {
-    exclude: ["itk-wasm"],
+    exclude: ['itk-wasm'],
   },
 });

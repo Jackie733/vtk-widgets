@@ -1,9 +1,9 @@
-import { runPipeline, TextStream, InterfaceTypes, Image } from "itk-wasm";
+import { runPipeline, TextStream, InterfaceTypes, Image } from 'itk-wasm';
 
-import { readDicomTags, readImageDicomFileSeries } from "@itk-wasm/dicom";
+import { readDicomTags, readImageDicomFileSeries } from '@itk-wasm/dicom';
 
-import itkConfig from "@/src/io/itk/itkConfig";
-import { getDicomSeriesWorkerPool, getWorker } from "@/src/io/itk/worker";
+import itkConfig from '@/src/io/itk/itkConfig';
+import { getDicomSeriesWorkerPool, getWorker } from '@/src/io/itk/worker';
 
 export interface TagSpec {
   name: string;
@@ -12,7 +12,7 @@ export interface TagSpec {
 
 export type SpatialParameters = Pick<
   Image,
-  "size" | "spacing" | "origin" | "direction"
+  'size' | 'spacing' | 'origin' | 'direction'
 >;
 
 // volume ID => file names
@@ -26,7 +26,7 @@ export type VolumesToFileNamesMap = Record<string, string[]>;
  * @returns
  */
 function sanitizeFileName(name: string) {
-  return name.replace(/\//g, "_");
+  return name.replace(/\//g, '_');
 }
 
 /**
@@ -41,7 +41,7 @@ async function runTask(
   module: string,
   args: any[],
   inputs: any[],
-  outputs: any[],
+  outputs: any[]
 ) {
   return runPipeline(module, args, outputs, inputs, {
     webWorker: getWorker(),
@@ -57,7 +57,7 @@ async function runTask(
  */
 export async function splitAndSort<T>(
   instances: T[],
-  mapToBlob: (inst: T, index: number) => Blob,
+  mapToBlob: (inst: T, index: number) => Blob
 ) {
   const inputs = await Promise.all(
     instances.map(async (instance, index) => {
@@ -70,25 +70,25 @@ export async function splitAndSort<T>(
           data: new Uint8Array(buffer),
         },
       };
-    }),
+    })
   );
 
   const args = [
-    "--action",
-    "categorize",
-    "--memory-io",
-    "0",
-    "--files",
+    '--action',
+    'categorize',
+    '--memory-io',
+    '0',
+    '--files',
     ...inputs.map((fd) => fd.data.path),
   ];
 
   const outputs = [{ type: InterfaceTypes.TextStream }];
 
-  const result = await runTask("dicom", args, inputs, outputs);
+  const result = await runTask('dicom', args, inputs, outputs);
 
   // File names are indexes into input files array
   const volumeToFileIndexes = JSON.parse(
-    (result.outputs[0].data as TextStream).data,
+    (result.outputs[0].data as TextStream).data
   ) as VolumesToFileNamesMap;
 
   const volumeToInstances = Object.fromEntries(
@@ -96,7 +96,7 @@ export async function splitAndSort<T>(
       volumeKey,
       // file indexes to Files
       fileIndexes.map((fileIndex) => instances[parseInt(fileIndex, 10)]),
-    ]),
+    ])
   );
 
   return volumeToInstances;
@@ -110,8 +110,8 @@ export async function splitAndSort<T>(
  */
 export async function readTags<T extends TagSpec[]>(
   file: File,
-  tags: T,
-): Promise<Record<T[number]["name"], string>> {
+  tags: T
+): Promise<Record<T[number]['name'], string>> {
   const tagsArgs = { tagsToRead: { tags: tags.map(({ tag }) => tag) } };
 
   const result = await readDicomTags(sanitizeFile(file), {
@@ -120,16 +120,13 @@ export async function readTags<T extends TagSpec[]>(
   });
   const tagValues = new Map(result.tags);
 
-  return tags.reduce(
-    (info, t) => {
-      const { tag, name } = t;
-      if (tagValues.has(tag)) {
-        return { ...info, [name]: tagValues.get(tag) };
-      }
-      return info;
-    },
-    {} as Record<T[number]["name"], string>,
-  );
+  return tags.reduce((info, t) => {
+    const { tag, name } = t;
+    if (tagValues.has(tag)) {
+      return { ...info, [name]: tagValues.get(tag) };
+    }
+    return info;
+  }, {} as Record<T[number]['name'], string>);
 }
 
 /**
@@ -141,7 +138,7 @@ export async function readTags<T extends TagSpec[]>(
  */
 export async function readVolumeSlice(
   file: File,
-  asThumbnail: boolean = false,
+  asThumbnail: boolean = false
 ) {
   const buffer = await file.arrayBuffer();
 
@@ -156,19 +153,19 @@ export async function readVolumeSlice(
   ];
 
   const args = [
-    "--action",
-    "getSliceImage",
-    "--thumbnail",
+    '--action',
+    'getSliceImage',
+    '--thumbnail',
     asThumbnail.toString(),
-    "--file",
+    '--file',
     sanitizeFileName(file.name),
-    "--memory-io",
-    "0",
+    '--memory-io',
+    '0',
   ];
 
   const outputs = [{ type: InterfaceTypes.Image }];
 
-  const result = await runTask("dicom", args, inputs, outputs);
+  const result = await runTask('dicom', args, inputs, outputs);
 
   return result.outputs[0].data as Image;
 }

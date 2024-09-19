@@ -177,7 +177,26 @@ function loadDataSources(sources: DataSource[]) {
   return wrapWithLoading(load)();
 }
 
+export function openFileDialog() {
+  return new Promise<File[]>((resolve) => {
+    const fileEl = document.createElement('input');
+    fileEl.setAttribute('type', 'file');
+    fileEl.setAttribute('multiple', 'multiple');
+    fileEl.setAttribute('accept', '*');
+    fileEl.addEventListener('change', () => {
+      const files = [...(fileEl.files ?? [])];
+      resolve(files);
+    });
+    fileEl.click();
+  });
+}
+
 export async function loadFiles(files: File[]) {
   const dataSources = files.map(fileToDataSource);
   return loadDataSources(dataSources);
+}
+
+export async function loadUserPromptedFiles() {
+  const files = await openFileDialog();
+  return loadFiles(files);
 }
