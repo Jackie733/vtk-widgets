@@ -1,25 +1,29 @@
 <script setup lang="ts">
-import LayoutGrid from "./components/LayoutGrid.vue";
-import HeaderModule from "./components/HeaderModule.vue";
-import { DefaultLayoutName, Layouts } from "./config";
-import { computed } from "vue";
-import { storeToRefs } from "pinia";
-import { useImageStore } from "./store/images";
+import { computed } from 'vue';
+import LayoutGrid from './components/LayoutGrid.vue';
+import HeaderModule from './components/HeaderModule.vue';
+import { DefaultLayoutName, Layouts } from './config';
+import { useDICOMStore } from './store/dicom';
+import { useImageStore } from './store/images';
 
 const layout = Layouts[DefaultLayoutName];
 
-const { metadata } = storeToRefs(useImageStore());
+const imageStore = useImageStore();
+const dicomStore = useDICOMStore();
 
 const hasData = computed(() => {
-  return metadata.value.name !== "(none)";
+  return (
+    imageStore.idList.length > 0 ||
+    Object.keys(dicomStore.volumeInfo).length > 0
+  );
 });
 </script>
 
 <template>
   <div class="bg-slate-800 w-screen h-screen">
-    <header-module />
+    <HeaderModule />
     <div class="h-full w-full p-4">
-      <layout-grid v-show="hasData" :layout="layout" />
+      <LayoutGrid v-show="hasData" :layout="layout" />
     </div>
   </div>
 </template>

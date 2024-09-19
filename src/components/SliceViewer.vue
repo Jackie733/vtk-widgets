@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, toRefs } from "vue";
-import { LPSAxisDir } from "../types/lps";
-import VtkSliceView from "./vtk/VtkSliceView.vue";
-import { VtkViewApi } from "../types/vtk-types";
-import { getLPSAxisFromDir } from "../utils/lps";
+import { computed, ref, toRefs } from 'vue';
+import { LPSAxisDir } from '../types/lps';
+import VtkSliceView from './vtk/VtkSliceView.vue';
+import { VtkViewApi } from '../types/vtk-types';
+import { getLPSAxisFromDir } from '../utils/lps';
+import { useCurrentImage } from '../composables/useCurrentImage';
 
 interface Props {
   id: string;
@@ -18,6 +19,8 @@ const props = defineProps<Props>();
 
 const { id: viewId, type: viewType, viewDirection, viewUp } = toRefs(props);
 const viewAxis = computed(() => getLPSAxisFromDir(viewDirection.value));
+
+const { currentImageID } = useCurrentImage();
 </script>
 
 <template>
@@ -28,6 +31,7 @@ const viewAxis = computed(() => getLPSAxisFromDir(viewDirection.value));
           class="vtk-view"
           ref="vtkView"
           :view-id="viewId"
+          :image-id="currentImageID"
           :view-direction="viewDirection"
           :view-up="viewUp"
         ></vtk-slice-view>

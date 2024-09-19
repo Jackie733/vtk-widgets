@@ -1,9 +1,9 @@
 import {
   readDicomTags,
   readImageDicomFileSeriesWorkerFunction,
-} from "@itk-wasm/dicom";
-import { readImage } from "@itk-wasm/image-io";
-import { getDefaultWebWorker, WorkerPool } from "itk-wasm";
+} from '@itk-wasm/dicom';
+import { readImage } from '@itk-wasm/image-io';
+import { getDefaultWebWorker, WorkerPool } from 'itk-wasm';
 
 const DEFAULT_NUM_WORKERS = 4;
 
@@ -18,13 +18,13 @@ export async function ensureWorker() {
 export function ensureDicomSeriesWorkerPool() {
   if (readDicomSeriesWorkerPool) return;
   const numberOfWorkers =
-    typeof globalThis.navigator?.hardwareConcurrency === "number"
+    typeof globalThis.navigator?.hardwareConcurrency === 'number'
       ? globalThis.navigator.hardwareConcurrency
       : DEFAULT_NUM_WORKERS;
 
   readDicomSeriesWorkerPool = new WorkerPool(
     numberOfWorkers,
-    readImageDicomFileSeriesWorkerFunction,
+    readImageDicomFileSeriesWorkerFunction
   );
 }
 
@@ -40,10 +40,14 @@ export async function initItkWorker() {
   await Promise.all([ensureWorker(), ensureDicomSeriesWorkerPool()]);
 
   try {
-    await readDicomTags(new File([], "a.dcm"));
-  } catch (err) {}
+    await readDicomTags(new File([], 'a.dcm'));
+  } catch (err) {
+    //
+  }
 
   try {
-    await readImage(new File([], "a.dcm"));
-  } catch (err) {}
+    await readImage(new File([], 'a.dcm'));
+  } catch (err) {
+    //
+  }
 }

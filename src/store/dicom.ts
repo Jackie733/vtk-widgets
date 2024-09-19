@@ -2,8 +2,11 @@ import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 import { Image } from 'itk-wasm';
 import * as DICOM from '@/src/io/dicom';
 import { defineStore } from 'pinia';
+import vtkITKHelper from '@kitware/vtk.js/Common/DataModel/ITKHelper';
 import { DataSourceWithFile } from '../io/import/dataSource';
-import { pick, identity } from '../utils';
+import { pick, identity, removeFromArray } from '../utils';
+import { useImageStore } from './images';
+import { useFileStore } from './files';
 
 export const ANONYMOUS_PATIENT = 'Anonymous';
 export const ANONYMOUS_PATIENT_ID = 'ANONYMOUS';
@@ -138,7 +141,15 @@ export const getWindowLevels = (info: VolumeInfo) => {
   return widths.map((width, i) => ({ width, level: levels[i] }));
 };
 
-// constructImage
+const constructImage = async (volumeKey: string) => {
+  const fileStore = useFileStore();
+  const files = fileStore.getFiles(volumeKey);
+  if (!files) throw new Error('No files for volume key');
+  const image = vtkITKHelper.convertItkToVtkImage(
+    await DICOM.buildImage(files)
+  );
+  return image;
+};
 
 export const useDICOMStore = defineStore('dicom', {
   state: (): State => ({
@@ -240,6 +251,83 @@ export const useDICOMStore = defineStore('dicom', {
         this.sliceData[volumeKey] = {};
         this.studyVolumes[studyKey].push(volumeKey);
       }
+    },
+    // You should probably call datasetStore.remove instead as this does not
+    // remove files/images/layers associated with the volume
+    deleteVolume(volumeKey: string) {
+      if (volumeKey in this.volumeInfo) {
+        const studyKey = this.volumeStudy[volumeKey];
+        delete this.volumeInfo[volumeKey];
+        delete this.sliceData[volumeKey];
+        delete this.volumeStudy[volumeKey];
+
+        if (volumeKey in this.volumeImageData) {
+          delete this.volumeImageData[volumeKey];
+        }
+
+        removeFromArray(this.studyVolumes[studyKey], volumeKey);
+        if (this.studyVolumes[studyKey].length === 0) {
+          this._deleteStudy(studyKey);
+        }
+      }
+    },
+    _deleteStudy(studyKey: string) {
+      if (studyKey in this.studyInfo) {
+        const patientKey = this.studyPatient[studyKey];
+        delete this.studyInfo[studyKey];
+        delete this.studyPatient[studyKey];
+
+        [...this.studyVolumes[studyKey]].forEach((volumeKey) =>
+          this.deleteVolume(volumeKey)
+        );
+        delete this.studyVolumes[studyKey];
+
+        removeFromArray(this.patientStudies[patientKey], studyKey);
+        if (this.patientStudies[patientKey].length === 0) {
+          this._deletePatient(patientKey);
+        }
+      }
+    },
+    _deletePatient(patientKey: string) {
+      if (patientKey in this.patientInfo) {
+        delete this.patientInfo[patientKey];
+
+        [...this.patientStudies[patientKey]].forEach((studyKey) =>
+          this._deleteStudy(studyKey)
+        );
+        delete this.patientStudies[patientKey];
+      }
+    },
+
+    async buildVolume(volumeKey: string, forceRebuild: boolean = false) {
+      const imageStore = useImageStore();
+
+      const alreadyBuilt = volumeKey in this.volumeImageData;
+      const buildNeeded =
+        forceRebuild || this.needsRebuild[volumeKey] || !alreadyBuilt;
+
+      delete this.needsRebuild[volumeKey];
+
+      const oldImagePromise = alreadyBuilt
+        ? [this.volumeImageData[volumeKey]]
+        : [];
+      const newImagePromise = buildNeeded
+        ? constructImage(volumeKey)
+        : this.volumeImageData[volumeKey];
+
+      this.volumeImageData[volumeKey] = newImagePromise;
+      const [image] = await Promise.all([newImagePromise, ...oldImagePromise]);
+
+      const imageExists = imageStore.dataIndex[volumeKey];
+      if (imageExists) {
+        imageStore.updateData(volumeKey, image);
+      } else {
+        const info = this.volumeInfo[volumeKey];
+        const name = getDisplayName(info);
+        imageStore.addVTKImageData(name, image, volumeKey);
+      }
+
+      return image;
     },
   },
 });
