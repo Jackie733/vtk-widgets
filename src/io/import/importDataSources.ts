@@ -111,3 +111,19 @@ export async function importDataSources(dataSources: DataSource[]) {
     (result) => !result.ok || isSelectable(result)
   );
 }
+export type ImportDataSourcesResult = Awaited<
+  ReturnType<typeof importDataSources>
+>[number];
+
+export function toDataSelection(loadable: VolumeResult) {
+  const { dataID } = loadable;
+  return dataID;
+}
+
+export function convertSuccessResultToDataSelection(
+  result: ImportDataSourcesResult
+) {
+  if (!isSelectable(result)) return null;
+  const importResult = result.data[0];
+  return toDataSelection(importResult);
+}

@@ -50,3 +50,7 @@ export function partitionByType<T, U extends T>(
   );
   return ret;
 }
+
+export function nonNullable<T>(value: T): value is NonNullable<T> {
+  return value != null;
+}
