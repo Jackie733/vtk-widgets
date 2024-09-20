@@ -3,7 +3,7 @@ import {
   readImageDicomFileSeriesWorkerFunction,
 } from '@itk-wasm/dicom';
 import { readImage } from '@itk-wasm/image-io';
-import { getDefaultWebWorker, WorkerPool } from 'itk-wasm';
+import { WorkerPool, getDefaultWebWorker } from 'itk-wasm';
 
 const DEFAULT_NUM_WORKERS = 4;
 
@@ -17,11 +17,11 @@ export async function ensureWorker() {
 
 export function ensureDicomSeriesWorkerPool() {
   if (readDicomSeriesWorkerPool) return;
+  // copied from read-image-dicom-file-series.ts
   const numberOfWorkers =
     typeof globalThis.navigator?.hardwareConcurrency === 'number'
       ? globalThis.navigator.hardwareConcurrency
       : DEFAULT_NUM_WORKERS;
-
   readDicomSeriesWorkerPool = new WorkerPool(
     numberOfWorkers,
     readImageDicomFileSeriesWorkerFunction
@@ -39,15 +39,15 @@ export function getDicomSeriesWorkerPool() {
 export async function initItkWorker() {
   await Promise.all([ensureWorker(), ensureDicomSeriesWorkerPool()]);
 
+  // preload
   try {
     await readDicomTags(new File([], 'a.dcm'));
   } catch (err) {
-    //
+    // ignore
   }
-
   try {
     await readImage(new File([], 'a.dcm'));
   } catch (err) {
-    //
+    // ignore
   }
 }

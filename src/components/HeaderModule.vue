@@ -19,12 +19,14 @@ const loadData = useThrottleFn(async () => {
     <div class="flex items-center justify-between h-full px-4">
       <div class="flex items-center space-x-2">
         <button class="bg-blue-300 rounded px-2" @click="loadUserPromptedFiles">
-          <i v-if="isLoading" class="pi pi-spin pi-spinner"></i>
-          Upload
+          <i
+            class="pi"
+            :class="isLoading ? 'pi-spin pi-spinner' : 'pi-upload'"
+          ></i>
         </button>
         <button class="bg-blue-300 rounded px-2" @click="loadData">
           <i v-if="isLoading" class="pi pi-spin pi-spinner"></i>
-          Load sample data
+          Sample data
         </button>
       </div>
     </div>

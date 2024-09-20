@@ -113,7 +113,6 @@ export async function readTags<T extends TagSpec[]>(
   tags: T
 ): Promise<Record<T[number]['name'], string>> {
   const tagsArgs = { tagsToRead: { tags: tags.map(({ tag }) => tag) } };
-
   const result = await readDicomTags(sanitizeFile(file), {
     ...tagsArgs,
     webWorker: getWorker(),

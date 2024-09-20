@@ -178,6 +178,18 @@ export const useDICOMStore = defineStore('dicom', {
         throw new Error('No volumes categorized from DICOM files(s)');
       }
 
+      const fileStore = useFileStore();
+
+      Object.entries(volumeToFiles).forEach(([volumeKey, files]) => {
+        const volumeDatasetFiles = files.map((file) => {
+          const source = fileToDataSources.get(file);
+          if (!source)
+            throw new Error('Did not match file with source Datasource');
+          return source;
+        });
+        fileStore.add(volumeKey, volumeDatasetFiles);
+      });
+
       await Promise.all(
         Object.entries(volumeToFiles).map(async ([volumeKey, files]) => {
           if (!(volumeKey in this.volumeInfo)) {
@@ -215,10 +227,11 @@ export const useDICOMStore = defineStore('dicom', {
 
             this._updateDatabase(patient, study, volumeInfo);
           }
-
-          // if (volumeKey in useImageStore().dataIndex) {
-          //   this.needsRebuild[volumeKey] = true;
-          // }
+          // invalidate any existing volume
+          if (volumeKey in useImageStore().dataIndex) {
+            // buildVolume requestor uses this as a rebuild hint
+            this.needsRebuild[volumeKey] = true;
+          }
         })
       );
 

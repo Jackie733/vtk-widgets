@@ -1,5 +1,5 @@
-import path from 'node:path';
-import { createRequire } from 'node:module';
+import path from 'path';
+import { createRequire } from 'module';
 import { defineConfig, normalizePath } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
@@ -68,20 +68,20 @@ export default defineConfig({
           ),
           dest: 'itk/pipelines',
         },
-        // {
-        //   src: resolvePath(
-        //     rootDir,
-        //     "src/io/itk-dicom/emscripten-build/**/dicom*",
-        //   ),
-        //   dest: "itk/pipelines",
-        // },
-        // {
-        //   src: resolvePath(
-        //     rootDir,
-        //     "src/io/resample/emscripten-build/**/resample*",
-        //   ),
-        //   dest: "itk/pipelines",
-        // },
+        {
+          src: resolvePath(
+            rootDir,
+            'src/io/itk-dicom/emscripten-build/**/dicom*'
+          ),
+          dest: 'itk/pipelines',
+        },
+        {
+          src: resolvePath(
+            rootDir,
+            'src/io/resample/emscripten-build/**/resample*'
+          ),
+          dest: 'itk/pipelines',
+        },
       ],
     }),
   ],

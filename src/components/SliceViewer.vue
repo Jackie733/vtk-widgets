@@ -27,14 +27,14 @@ const { currentImageID } = useCurrentImage();
   <div class="vtk-container-wrapper">
     <div class="vtk-container">
       <div class="vtk-sub-container">
-        <vtk-slice-view
+        <VtkSliceView
           class="vtk-view"
           ref="vtkView"
           :view-id="viewId"
           :image-id="currentImageID"
           :view-direction="viewDirection"
           :view-up="viewUp"
-        ></vtk-slice-view>
+        ></VtkSliceView>
       </div>
     </div>
     <div class="vtk-gutter"></div>

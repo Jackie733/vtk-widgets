@@ -1,6 +1,6 @@
-import { Awaitable } from "@vueuse/core";
-import { Maybe } from "@/src/types";
-import { defer, partitionByType } from "../utils";
+import { Awaitable } from '@vueuse/core';
+import { Maybe } from '@/src/types';
+import { defer, partitionByType } from '../utils';
 
 /**
  * Represents a pipeline error.
@@ -43,13 +43,13 @@ export type PipelineResult<DataType, ResultType> =
 export const partitionResults = <T, U>(arr: Array<PipelineResult<T, U>>) =>
   partitionByType(
     (r: PipelineResult<T, U>): r is PipelineResultSuccess<U> => r.ok,
-    arr,
+    arr
   );
 
 function createPipelineError<DataType>(
   message: string,
   input: DataType,
-  cause: unknown,
+  cause: unknown
 ) {
   return {
     message,
@@ -66,7 +66,7 @@ export interface IPipeline<DataType, ResultType> {
   execute(input: DataType): Promise<PipelineResult<DataType, ResultType>>;
 }
 
-const DoneSentinel: symbol = Symbol("DoneSentinel");
+const DoneSentinel: symbol = Symbol('DoneSentinel');
 type DoneSentinelType = symbol;
 export type Done<Out> = (out?: Out) => DoneSentinelType;
 
@@ -82,7 +82,7 @@ export interface PipelineContext<DataType, ResultType, ExtraContext> {
    */
   execute(
     input: DataType,
-    extra?: ExtraContext,
+    extra?: ExtraContext
   ): Promise<PipelineResult<DataType, ResultType>>;
   /**
    * Any extra user-supplied data.
@@ -121,10 +121,10 @@ export interface PipelineContext<DataType, ResultType, ExtraContext> {
 export type Handler<
   DataType,
   ResultType = undefined,
-  ExtraContext = undefined,
+  ExtraContext = undefined
 > = (
   input: DataType,
-  context: PipelineContext<DataType, ResultType, ExtraContext>,
+  context: PipelineContext<DataType, ResultType, ExtraContext>
 ) => Awaitable<DataType | DoneSentinelType>;
 
 /**
@@ -141,7 +141,7 @@ export type Handler<
 export default class Pipeline<
   DataType,
   ResultType = undefined,
-  ExtraContext = undefined,
+  ExtraContext = undefined
 > implements IPipeline<DataType, ResultType>
 {
   private handlers: Handler<DataType, ResultType, ExtraContext>[];
@@ -172,7 +172,7 @@ export default class Pipeline<
 
   private async startExecutionContext(
     input: DataType,
-    extraContext?: ExtraContext,
+    extraContext?: ExtraContext
   ) {
     const handlers = [...this.handlers];
     const nestedExecutions: Array<
@@ -197,7 +197,7 @@ export default class Pipeline<
       const context: PipelineContext<DataType, ResultType, ExtraContext> = {
         done: (out?: ResultType): DoneSentinelType => {
           if (doneInvoked) {
-            throw new Error("done() called twice!");
+            throw new Error('done() called twice!');
           }
 
           doneInvoked = true;
@@ -229,7 +229,7 @@ export default class Pipeline<
         const error =
           thrown instanceof Error
             ? thrown
-            : new Error(thrown ? String(thrown) : "Unknown error occurred");
+            : new Error(thrown ? String(thrown) : 'Unknown error occurred');
         terminate(undefined, error);
         return;
       }

@@ -16,6 +16,7 @@ import './global.css';
 initItkWorker();
 registerAllReaders(FILE_READERS);
 
+// for @itk-wasm/image-io
 setPipelineWorkerUrl(itkConfig.pipelineWorkerUrl);
 setPipelinesBaseUrl(itkConfig.imageIOUrl);
 
