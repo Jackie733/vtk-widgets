@@ -2,6 +2,7 @@
 import { computed, ref, toRefs } from 'vue';
 import { LPSAxisDir } from '../types/lps';
 import VtkSliceView from './vtk/VtkSliceView.vue';
+import VtkBaseSliceRepresentation from './vtk/VtkBaseSliceRepresentation.vue';
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
 import { useCurrentImage } from '../composables/useCurrentImage';
@@ -34,7 +35,14 @@ const { currentImageID } = useCurrentImage();
           :image-id="currentImageID"
           :view-direction="viewDirection"
           :view-up="viewUp"
-        ></VtkSliceView>
+        >
+          <VtkBaseSliceRepresentation
+            :view-id="viewId"
+            :image-id="currentImageID"
+            :axis="viewAxis"
+          >
+          </VtkBaseSliceRepresentation>
+        </VtkSliceView>
       </div>
     </div>
     <div class="vtk-gutter"></div>

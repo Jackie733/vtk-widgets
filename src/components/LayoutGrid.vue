@@ -16,13 +16,13 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, toRefs } from "vue";
-import { InitViewSpecs } from "../config";
-import SliceViewer from "./SliceViewer.vue";
-import { Layout } from "../types/layout";
+import { computed, defineComponent, PropType, toRefs } from 'vue';
+import { InitViewSpecs } from '../config';
+import { Layout } from '../types/layout';
+import { ViewTypeToComponent } from '../core/viewTypes';
 
 export default defineComponent({
-  name: "LayoutGrid",
+  name: 'LayoutGrid',
   props: {
     layout: {
       type: Object as PropType<Layout>,
@@ -34,18 +34,18 @@ export default defineComponent({
 
     const items = computed(() => {
       return layout.value.items.map((item) => {
-        if (typeof item === "string") {
+        if (typeof item === 'string') {
           const spec = InitViewSpecs[item];
           return {
-            type: "view",
+            type: 'view',
             id: item,
             viewType: spec.viewType,
-            component: SliceViewer,
+            component: ViewTypeToComponent[spec.viewType],
             props: spec.props,
           };
         }
         return {
-          type: "layout",
+          type: 'layout',
           ...item,
         };
       });
