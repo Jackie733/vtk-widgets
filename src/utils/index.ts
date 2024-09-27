@@ -1,3 +1,5 @@
+import { z } from 'zod';
+
 export function identity<T>(arg: T) {
   return arg;
 }
@@ -53,4 +55,16 @@ export function partitionByType<T, U extends T>(
 
 export function nonNullable<T>(value: T): value is NonNullable<T> {
   return value != null;
+}
+
+export function ensureError(e: unknown) {
+  return e instanceof Error ? e : new Error(JSON.stringify(e));
+}
+
+// https://github.com/colinhacks/zod/discussions/839#discussioncomment-4335236
+export function zodEnumFromObjKeys<K extends string>(
+  obj: Record<K, any>
+): z.ZodEnum<[K, ...K[]]> {
+  const [firstKey, ...otherKeys] = Object.keys(obj) as K[];
+  return z.enum([firstKey, ...otherKeys]);
 }

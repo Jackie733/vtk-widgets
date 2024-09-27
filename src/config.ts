@@ -1,5 +1,5 @@
-import { Layout, LayoutDirection } from "./types/layout";
-import { ViewSpec } from "./types/views";
+import { Layout, LayoutDirection } from './types/layout';
+import { ViewSpec } from './types/views';
 
 /**
  * These are the initial view IDs.
@@ -7,14 +7,14 @@ import { ViewSpec } from "./types/views";
  * These view IDs get mapped to components in core/viewTypes.ts.
  */
 export const InitViewIDs: Record<string, string> = {
-  Coronal: "Coronal",
-  Sagittal: "Sagittal",
-  Axial: "Axial",
-  Three: "3D",
-  ObliqueCoronal: "ObliqueCoronal",
-  ObliqueSagittal: "ObliqueSagittal",
-  ObliqueAxial: "ObliqueAxial",
-  ObliqueThree: "Oblique3D",
+  Coronal: 'Coronal',
+  Sagittal: 'Sagittal',
+  Axial: 'Axial',
+  Three: '3D',
+  ObliqueCoronal: 'ObliqueCoronal',
+  ObliqueSagittal: 'ObliqueSagittal',
+  ObliqueAxial: 'ObliqueAxial',
+  ObliqueThree: 'Oblique3D',
 };
 
 /**
@@ -22,71 +22,71 @@ export const InitViewIDs: Record<string, string> = {
  */
 export const InitViewSpecs: Record<string, ViewSpec> = {
   [InitViewIDs.Coronal]: {
-    viewType: "2D",
+    viewType: '2D',
     props: {
-      viewDirection: "Posterior",
-      viewUp: "Superior",
+      viewDirection: 'Posterior',
+      viewUp: 'Superior',
     },
   },
   [InitViewIDs.Sagittal]: {
-    viewType: "2D",
+    viewType: '2D',
     props: {
-      viewDirection: "Right",
-      viewUp: "Superior",
+      viewDirection: 'Right',
+      viewUp: 'Superior',
     },
   },
   [InitViewIDs.Axial]: {
-    viewType: "2D",
+    viewType: '2D',
     props: {
-      viewDirection: "Superior",
-      viewUp: "Anterior",
+      viewDirection: 'Superior',
+      viewUp: 'Anterior',
     },
   },
   [InitViewIDs.ObliqueCoronal]: {
-    viewType: "Oblique",
+    viewType: 'Oblique',
     props: {
-      viewDirection: "Posterior",
-      viewUp: "Superior",
+      viewDirection: 'Posterior',
+      viewUp: 'Superior',
     },
   },
   [InitViewIDs.ObliqueSagittal]: {
-    viewType: "Oblique",
+    viewType: 'Oblique',
     props: {
-      viewDirection: "Right",
-      viewUp: "Superior",
+      viewDirection: 'Right',
+      viewUp: 'Superior',
     },
   },
   [InitViewIDs.ObliqueAxial]: {
-    viewType: "Oblique",
+    viewType: 'Oblique',
     props: {
-      viewDirection: "Superior",
-      viewUp: "Anterior",
+      viewDirection: 'Superior',
+      viewUp: 'Anterior',
     },
   },
   [InitViewIDs.Three]: {
-    viewType: "3D",
+    viewType: '3D',
     props: {
-      viewDirection: "Posterior",
-      viewUp: "Superior",
+      viewDirection: 'Posterior',
+      viewUp: 'Superior',
     },
   },
   [InitViewIDs.ObliqueThree]: {
-    viewType: "Oblique3D",
+    viewType: 'Oblique3D',
     props: {
-      viewDirection: "Posterior",
-      viewUp: "Superior",
+      viewDirection: 'Posterior',
+      viewUp: 'Superior',
       slices: [
         {
           viewID: InitViewIDs.ObliqueSagittal,
-          axis: "Sagittal",
+          axis: 'Sagittal',
         },
         {
           viewID: InitViewIDs.ObliqueCoronal,
-          axis: "Coronal",
+          axis: 'Coronal',
         },
         {
           viewID: InitViewIDs.ObliqueAxial,
-          axis: "Axial",
+          axis: 'Axial',
         },
       ],
     },
@@ -101,14 +101,14 @@ export const DefaultViewSpec = InitViewSpecs[InitViewIDs.Axial];
 /**
  * The default layout.
  */
-export const DefaultLayoutName = "Three Columns View";
+export const DefaultLayoutName = 'Three Columns View';
 
 /**
  * Defines the default layouts.
  */
 export const Layouts: Record<string, Layout> = [
   {
-    name: "Three Columns View",
+    name: 'Three Columns View',
     direction: LayoutDirection.H,
     items: [
       {
@@ -118,12 +118,12 @@ export const Layouts: Record<string, Layout> = [
     ],
   },
   {
-    name: "Axial Only",
+    name: 'Axial Only',
     direction: LayoutDirection.H,
     items: [InitViewIDs.Axial],
   },
   {
-    name: "Axial Primary",
+    name: 'Axial Primary',
     direction: LayoutDirection.V,
     items: [
       InitViewIDs.Axial,
@@ -134,7 +134,7 @@ export const Layouts: Record<string, Layout> = [
     ],
   },
   {
-    name: "3D Primary",
+    name: '3D Primary',
     direction: LayoutDirection.V,
     items: [
       InitViewIDs.Three,
@@ -145,7 +145,7 @@ export const Layouts: Record<string, Layout> = [
     ],
   },
   {
-    name: "Quad View",
+    name: 'Quad View',
     direction: LayoutDirection.H,
     items: [
       {
@@ -159,7 +159,7 @@ export const Layouts: Record<string, Layout> = [
     ],
   },
   {
-    name: "Oblique View",
+    name: 'Oblique View',
     direction: LayoutDirection.H,
     items: [
       {
@@ -173,7 +173,7 @@ export const Layouts: Record<string, Layout> = [
     ],
   },
   {
-    name: "3D Only",
+    name: '3D Only',
     direction: LayoutDirection.H,
     items: [InitViewIDs.Three],
   },
