@@ -1,12 +1,20 @@
-import Pipeline from '@/src/core/pipeline';
+import Pipeline, { PipelineContext } from '@/src/core/pipeline';
 import { ensureError } from '@/src/utils';
-import { argv0 } from 'process';
-import { ImportHandler } from '../common';
+import * as path from '@/src/utils/path';
+import { Awaitable } from '@vueuse/core';
+import {
+  ArchiveContents,
+  ImportContext,
+  ImportHandler,
+  ImportResult,
+} from '../common';
 import downloadUrl from './downloadUrl';
 import updateFileMimeType from './updateFileMimeType';
 import doneWithDataSource from './doneWithDataSource';
 import extractArchiveTarget from './extractArchiveTarget';
-import { Dataset } from '../../state-file/schema';
+import { Dataset, Manifest } from '../../state-file/schema';
+import { FileEntry } from '../../types';
+import { DataSource, fileToDataSource } from '../dataSource';
 
 const resolveUriSource: ImportHandler = async (dataSource, { extra, done }) => {
   const { uriSrc } = dataSource;
@@ -71,4 +79,45 @@ const resolveArchiveMember: ImportHandler = async (
   return dataSource;
 };
 
-function getDataSourcesForDataset(dataset: Dataset, manifest: string) {}
+function getDataSourcesForDataset(
+  dataset: Dataset,
+  manifest: Manifest,
+  stateFileContents: FileEntry[]
+) {
+  const isStateFile = stateFileContents
+    .filter(
+      (entry) =>
+        path.normalize(entry.archivePath) === path.normalize(dataset.path)
+    )
+    .map((entry) => fileToDataSource(entry.file));
+  return [...isStateFile];
+}
+
+async function restoreDatasets(
+  manifest: Manifest,
+  datasetFiles: FileEntry[],
+  { extra, execute }: PipelineContext<DataSource, ImportResult, ImportContext>
+) {
+  const archiveCache = new Map<File, Awaitable<ArchiveContents>>();
+
+  const stateDatasetFiles = datasetFiles.map((datasetFile) => {
+    return {
+      ...datasetFile,
+      archivePath: path.normalize(datasetFile.archivePath),
+    };
+  });
+
+  const { datasets } = manifest;
+  // Mapping of the state file ID => new store ID
+  const stateIDToStoreID: Record<string, string> = {};
+
+  const resolvePipeline = new Pipeline([
+    updateFileMimeType,
+    resolveUriSource,
+    // process parent after resolving the uri source, so we don't
+    // unnecessarily download ancestor UriSources.
+    processParentIfNotFile,
+    resolveArchiveMember,
+    doneWithDataSource,
+  ]);
+}
