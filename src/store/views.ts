@@ -2,6 +2,12 @@ import { defineStore } from 'pinia';
 import { Layout, LayoutDirection } from '../types/layout';
 import { ViewSpec } from '../types/views';
 import { DefaultViewSpec, InitViewSpecs } from '../config';
+import {
+  StateFile,
+  Layout as StateFileLayout,
+  View,
+} from '../io/state-file/schema';
+import { useViewConfigStore } from './view-configs';
 
 interface State {
   layout: Layout;
@@ -46,6 +52,31 @@ export const useViewStore = defineStore('view', {
           }
         });
       }
+    },
+    serialize(stateFile: StateFile) {
+      const viewConfigStore = useViewConfigStore();
+      const { manifest } = stateFile;
+      const { views } = manifest;
+
+      manifest.layout = this.layout as StateFileLayout;
+
+      // Serialize the view specs
+      Object.entries(this.viewSpecs).forEach(([id, spec]) => {
+        const type = spec.viewType;
+        const { props } = spec;
+        const config = {};
+
+        const view = {
+          id,
+          type,
+          props,
+          config,
+        };
+
+        views.push(view);
+      });
+
+      // Serialize the view config
     },
   },
 });

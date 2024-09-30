@@ -8,7 +8,9 @@ import {
 } from '@/src/utils/doubleKeyRecord';
 import { Maybe } from '@/src/types';
 import { clampValue } from '@kitware/vtk.js/Common/Core/Math';
+import { ViewConfig } from '@/src/io/state-file/schema';
 import { SliceConfig } from './types';
+import { createViewConfigSerializer } from './common';
 
 export const defaultSliceConfig = (): SliceConfig => ({
   slice: 0,
@@ -59,6 +61,16 @@ export const useViewSliceStore = defineStore('viewSlice', () => {
     }
   };
 
+  const serialize = createViewConfigSerializer(configs, 'slice');
+
+  const deserialize = (viewID: string, config: Record<string, ViewConfig>) => {
+    Object.entries(config).forEach(([dataID, viewConfig]) => {
+      if (viewConfig.slice) {
+        updateConfig(viewID, dataID, viewConfig.slice);
+      }
+    });
+  };
+
   return {
     configs,
     getConfig,
@@ -66,5 +78,7 @@ export const useViewSliceStore = defineStore('viewSlice', () => {
     resetSlice,
     removeView,
     removeData,
+    serialize,
+    deserialize,
   };
 });
