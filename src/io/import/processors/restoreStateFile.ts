@@ -94,13 +94,13 @@ function getDataSourcesForDataset(
   manifest: Manifest,
   stateFileContents: FileEntry[]
 ) {
-  const isStateFile = stateFileContents
+  const inStateFile = stateFileContents
     .filter(
       (entry) =>
         path.normalize(entry.archivePath) === path.normalize(dataset.path)
     )
     .map((entry) => fileToDataSource(entry.file));
-  return [...isStateFile];
+  return [...inStateFile];
 }
 
 async function restoreDatasets(
@@ -233,6 +233,15 @@ const restoreStateFile: ImportHandler = async (dataSource, pipelineContext) => {
     }
 
     // Restore the views
-    // useViewStore()
+    useViewStore().deserialize(manifest.views, stateIDToStoreID);
+
+    // Restore the labelmaps
+    //
+
+    return pipelineContext.done();
   }
+
+  return dataSource;
 };
+
+export default restoreStateFile;

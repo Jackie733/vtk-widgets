@@ -9,6 +9,8 @@ import {
 } from '@/src/utils/doubleKeyRecord';
 import { Maybe } from '@/src/types';
 import { WindowLevelConfig } from './types';
+import { createViewConfigSerializer } from './common';
+import { ViewConfig } from '../../io/state-file/schema';
 
 export const defaultWindowLevelConfig = (): WindowLevelConfig => ({
   width: 1,
@@ -92,6 +94,16 @@ const useWindowingStore = defineStore('windowing', () => {
     }
   };
 
+  const serialize = createViewConfigSerializer(configs, 'window');
+
+  const deserialize = (viewID: string, config: Record<string, ViewConfig>) => {
+    Object.entries(config).forEach(([dataID, viewConfig]) => {
+      if (viewConfig.window) {
+        updateConfig(viewID, dataID, viewConfig.window);
+      }
+    });
+  };
+
   return {
     configs,
     syncAcrossViews,
@@ -101,6 +113,8 @@ const useWindowingStore = defineStore('windowing', () => {
     resetWindowLevel,
     removeView,
     removeData,
+    serialize,
+    deserialize,
   };
 });
 

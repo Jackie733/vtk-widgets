@@ -77,6 +77,25 @@ export const useViewStore = defineStore('view', {
       });
 
       // Serialize the view config
+      viewConfigStore.serialize(stateFile);
+    },
+    deserialize(views: View[], dataIDMap: Record<string, string>) {
+      const viewConfigStore = useViewConfigStore();
+
+      views.forEach((view) => {
+        const viewID = view.id;
+
+        const viewSpec = {
+          viewType: view.type,
+          props: view.props,
+        };
+
+        this.viewSpecs[viewID] = viewSpec;
+
+        // Now delegate the deserialization of the view config
+        const { config } = view;
+        viewConfigStore.deserialize(viewID, config, dataIDMap);
+      });
     },
   },
 });

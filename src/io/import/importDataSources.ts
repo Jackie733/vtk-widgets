@@ -15,6 +15,9 @@ import downloadUrl from './processors/downloadUrl';
 import extractArchiveTarget from './processors/extractArchiveTarget';
 import extractArchive from './processors/extractArchive';
 import handleDicomFile from './processors/handleDicomFile';
+import restoreStateFile from './processors/restoreStateFile';
+import importSingleFile from './processors/importSingleFile';
+import handleConfig from './processors/handleConfig';
 
 /**
  * Tries to turn a thrown object into a meaningful error string.
@@ -92,11 +95,14 @@ export async function importDataSources(dataSources: DataSource[]) {
 
   const middleware = [
     updateFileMimeType,
+    restoreStateFile,
     downloadUrl,
     extractArchiveTarget,
     extractArchive,
+    handleConfig, // collect config files to apply later
     // should be before importSingleFile, since DICOM is more specific
     handleDicomFile,
+    importSingleFile,
     unhandledResource,
   ];
   const loader = new Pipeline(middleware);
