@@ -3,6 +3,8 @@ import { computed, ref, toRefs } from 'vue';
 import { LPSAxisDir } from '../types/lps';
 import VtkSliceView from './vtk/VtkSliceView.vue';
 import VtkBaseSliceRepresentation from './vtk/VtkBaseSliceRepresentation.vue';
+import VtkSliceViewWindowManipulator from './vtk/VtkSliceViewWindowManipulator.vue';
+import VtkSliceViewSlicingManipulator from './vtk/VtkSliceViewSlicingManipulator.vue';
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
 import { useCurrentImage } from '../composables/useCurrentImage';
@@ -20,6 +22,8 @@ const props = defineProps<Props>();
 
 const { id: viewId, type: viewType, viewDirection, viewUp } = toRefs(props);
 const viewAxis = computed(() => getLPSAxisFromDir(viewDirection.value));
+
+const windowingManipulatorProps = computed(() => {});
 
 const { currentImageID } = useCurrentImage();
 </script>
@@ -42,6 +46,15 @@ const { currentImageID } = useCurrentImage();
             :axis="viewAxis"
           >
           </VtkBaseSliceRepresentation>
+          <VtkSliceViewSlicingManipulator
+            :view-id="viewId"
+            :image-id="currentImageID"
+            :view-direction="viewDirection"
+          ></VtkSliceViewSlicingManipulator>
+          <VtkSliceViewWindowManipulator
+            :view-id="viewId"
+            :image-id="currentImageID"
+          ></VtkSliceViewWindowManipulator>
         </VtkSliceView>
       </div>
     </div>

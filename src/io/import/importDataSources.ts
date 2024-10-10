@@ -112,6 +112,7 @@ export async function importDataSources(dataSources: DataSource[]) {
   );
 
   const dicomResult = await importDicomFiles(importContext.dicomDataSources);
+  console.log(dicomResult, results);
 
   return [...results, dicomResult].filter(
     (result) => !result.ok || isSelectable(result)

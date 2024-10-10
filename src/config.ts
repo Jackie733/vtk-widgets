@@ -109,13 +109,8 @@ export const DefaultLayoutName = 'Three Columns View';
 export const Layouts: Record<string, Layout> = [
   {
     name: 'Three Columns View',
-    direction: LayoutDirection.H,
-    items: [
-      {
-        direction: LayoutDirection.V,
-        items: [InitViewIDs.Axial, InitViewIDs.Coronal, InitViewIDs.Sagittal],
-      },
-    ],
+    direction: LayoutDirection.V,
+    items: [InitViewIDs.Axial, InitViewIDs.Coronal, InitViewIDs.Sagittal],
   },
   {
     name: 'Axial Only',

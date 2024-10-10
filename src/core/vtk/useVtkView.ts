@@ -1,20 +1,20 @@
-import { onVTKEvent } from "@/src/composables/onVTKEvent";
-import { Maybe } from "@/src/types";
-import vtkRenderer from "@kitware/vtk.js/Rendering/Core/Renderer";
-import vtkOpenGLRenderWindow from "@kitware/vtk.js/Rendering/OpenGL/RenderWindow";
-import vtkWidgetManager from "@kitware/vtk.js/Widgets/Core/WidgetManager";
+import { onVTKEvent } from '@/src/composables/onVTKEvent';
+import { Maybe } from '@/src/types';
+import vtkRenderer from '@kitware/vtk.js/Rendering/Core/Renderer';
+import vtkOpenGLRenderWindow from '@kitware/vtk.js/Rendering/OpenGL/RenderWindow';
+import vtkWidgetManager from '@kitware/vtk.js/Widgets/Core/WidgetManager';
 import {
   MaybeRef,
   onScopeDispose,
   unref,
   watchEffect,
   watchPostEffect,
-} from "vue";
-import { View } from "./types";
-import vtkRenderWindow from "@kitware/vtk.js/Rendering/Core/RenderWindow";
-import vtkRenderWindowInteractor from "@kitware/vtk.js/Rendering/Core/RenderWindowInteractor";
-import { batchForNextTask } from "@/src/utils/batchForNextTask";
-import { useElementSize } from "@vueuse/core";
+} from 'vue';
+import vtkRenderWindow from '@kitware/vtk.js/Rendering/Core/RenderWindow';
+import vtkRenderWindowInteractor from '@kitware/vtk.js/Rendering/Core/RenderWindowInteractor';
+import { batchForNextTask } from '@/src/utils/batchForNextTask';
+import { useElementSize } from '@vueuse/core';
+import { View } from './types';
 
 export function useWebGLRenderWindow(container: MaybeRef<Maybe<HTMLElement>>) {
   const renderWindowView = vtkOpenGLRenderWindow.newInstance();
@@ -50,7 +50,7 @@ export function useWidgetManager(renderer: vtkRenderer) {
     }
   };
 
-  onVTKEvent(manager, "onModified", updatePickingState);
+  onVTKEvent(manager, 'onModified', updatePickingState);
   updatePickingState();
 
   return manager;
@@ -103,7 +103,7 @@ export function useVtkView(container: MaybeRef<Maybe<HTMLElement>>): View {
     deferredRender();
   };
 
-  onVTKEvent(renderer, "onModified", () => {
+  onVTKEvent(renderer, 'onModified', () => {
     requestRender();
   });
 
