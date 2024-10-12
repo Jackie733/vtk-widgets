@@ -1,5 +1,7 @@
 import { TOOL_COLORS } from '@/src/config';
 import { ref } from 'vue';
+import { Maybe } from '@/src/types';
+import { StoreActions, StoreState } from 'pinia';
 import { useIdStore } from '../id';
 
 const labelDefault = Object.freeze({
@@ -44,5 +46,70 @@ export const useLabels = <Props>(newLabelDefault: Props) => {
 
   const deleteLabel = (id: LabelID) => {
     if (!(id in labels.value)) throw new Error('Label not found');
+
+    delete labels.value[id];
+    labels.value = { ...labels.value }; // trigger reactive update for measurement list
+
+    if (id === activeLabel.value) {
+      const labelIDs = Object.keys(labels.value);
+      if (labelIDs.length !== 0) setActiveLabel(labelIDs[0]);
+      else setActiveLabel('');
+    }
+  };
+
+  const updateLabel = (id: LabelID, patch: ToolLabel) => {
+    if (!(id in labels.value)) throw new Error('Label does not exist');
+
+    labels.value = { ...labels.value, [id]: { ...labels.value[id], ...patch } };
+  };
+
+  // Flag to indicate if should clear existing labels
+  const defaultLabels = ref(true);
+
+  const clearDefaultLabels = () => {
+    if (defaultLabels.value) labels.value = {};
+    defaultLabels.value = false;
+  };
+
+  const findLabel = (name: Maybe<string>) => {
+    return Object.entries(labels.value).find(
+      ([, { labelName }]) => name === labelName
+    );
+  };
+
+  const mergeLabel = (label: ToolLabel) => {
+    const { labelName } = label;
+    const matchingName = findLabel(labelName);
+
+    if (matchingName) {
+      const [existingID] = matchingName;
+      updateLabel(existingID, label);
+      return existingID;
+    }
+
+    return addLabel(label);
+  };
+
+  const mergeLabels = (newLabels: Maybe<ToolLabels>) => {
+    Object.entries(newLabels ?? {}).forEach(([labelName, props]) =>
+      mergeLabel({ ...props, labelName })
+    );
+  };
+
+  return {
+    labels,
+    activeLabel,
+    setActiveLabel,
+    addLabel,
+    deleteLabel,
+    updateLabel,
+    clearDefaultLabels,
+    mergeLabel,
+    mergeLabels,
   };
 };
+
+type UseLabels<Tool> = ReturnType<typeof useLabels<Tool>>;
+
+export type LabelsStore<Tool> = StoreState<UseLabels<Tool>> &
+  StoreActions<UseLabels<Tool>>;
