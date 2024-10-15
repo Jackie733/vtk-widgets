@@ -1,3 +1,4 @@
+export const EPSILON = 10e-6;
 export const NOOP = () => {};
 
 export const WLAutoRanges = {

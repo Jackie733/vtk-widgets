@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EPSILON } from '../constants';
 
 export function identity<T>(arg: T) {
   return arg;
@@ -115,3 +116,11 @@ export const ensureDefault = <T>(
 
   return records[key];
 };
+
+export function roundIfCloseToInteger(value: number, eps = EPSILON) {
+  const rounded = Math.round(value);
+  if (Math.abs(rounded - value) <= eps) {
+    return rounded;
+  }
+  return value;
+}
