@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 import { whenever } from '@vueuse/core';
 import vtkMouseCameraTrackballPanManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballPanManipulator';
 import vtkMouseCameraTrackballZoomToMouseManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballZoomToMouseManipulator';
+import { isIP } from 'net';
 import { LPSAxisDir } from '../types/lps';
 import VtkSliceView from './vtk/VtkSliceView.vue';
 import VtkBaseSliceRepresentation from './vtk/VtkBaseSliceRepresentation.vue';
@@ -19,6 +20,7 @@ import { Tools } from '../store/tools/types';
 import { useSliceConfig } from '../composables/useSliceConfig';
 import { LayoutViewProps } from '../types';
 import { useResetViewsEvents } from './tools/ResetViews.vue';
+import { useViewAnimationListener } from '../composables/useViewAnimationListener';
 
 interface Props extends LayoutViewProps {
   viewDirection: LPSAxisDir;
@@ -40,6 +42,8 @@ function resetCamera() {
 }
 
 useResetViewsEvents().onClick(resetCamera);
+
+useViewAnimationListener(vtkView, viewId, viewType);
 
 const { currentTool } = storeToRefs(useToolStore());
 const windowingManipulatorProps = computed(() =>
@@ -128,11 +132,19 @@ whenever(
           <VtkSliceViewWindowManipulator
             :view-id="viewId"
             :image-id="currentImageID"
+            :manipulator-config="windowingManipulatorProps"
           ></VtkSliceViewWindowManipulator>
         </VtkSliceView>
       </div>
+      <transition name="loading">
+        <div v-if="isImageLoading" class="overlay-no-events loading">
+          <div>Loading</div>
+          <div>
+            <i class="pi pi-spin pi-spinner"></i>
+          </div>
+        </div>
+      </transition>
     </div>
-    <div class="vtk-gutter"></div>
   </div>
 </template>
 
