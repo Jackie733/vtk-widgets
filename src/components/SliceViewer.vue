@@ -18,6 +18,7 @@ import { useToolStore } from '../store/tools';
 import { Tools } from '../store/tools/types';
 import { useSliceConfig } from '../composables/useSliceConfig';
 import { LayoutViewProps } from '../types';
+import { useResetViewsEvents } from './tools/ResetViews.vue';
 
 interface Props extends LayoutViewProps {
   viewDirection: LPSAxisDir;
@@ -37,6 +38,8 @@ function resetCamera() {
   if (!vtkView.value) return;
   vtkView.value.resetCamera();
 }
+
+useResetViewsEvents().onClick(resetCamera);
 
 const { currentTool } = storeToRefs(useToolStore());
 const windowingManipulatorProps = computed(() =>
