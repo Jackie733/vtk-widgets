@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, toRefs } from 'vue';
+import { storeToRefs } from 'pinia';
+import { whenever } from '@vueuse/core';
 import { LPSAxisDir } from '../types/lps';
 import VtkSliceView from './vtk/VtkSliceView.vue';
 import VtkBaseSliceRepresentation from './vtk/VtkBaseSliceRepresentation.vue';
@@ -8,10 +10,12 @@ import VtkSliceViewSlicingManipulator from './vtk/VtkSliceViewSlicingManipulator
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
 import { useCurrentImage } from '../composables/useCurrentImage';
+import { useToolStore } from '../store/tools';
+import { Tools } from '../store/tools/types';
+import { useSliceConfig } from '../composables/useSliceConfig';
+import { LayoutViewProps } from '../types';
 
-interface Props {
-  id: string;
-  type: string;
+interface Props extends LayoutViewProps {
   viewDirection: LPSAxisDir;
   viewUp: LPSAxisDir;
 }
@@ -23,9 +27,30 @@ const props = defineProps<Props>();
 const { id: viewId, type: viewType, viewDirection, viewUp } = toRefs(props);
 const viewAxis = computed(() => getLPSAxisFromDir(viewDirection.value));
 
-const windowingManipulatorProps = computed(() => {});
+const hover = ref(false);
 
-const { currentImageID } = useCurrentImage();
+function resetCamera() {
+  if (!vtkView.value) return;
+  vtkView.value.resetCamera();
+}
+
+const { currentTool } = storeToRefs(useToolStore());
+const windowingManipulatorProps = computed(() =>
+  currentTool.value === Tools.WindowLevel ? { button: 1 } : { button: -1 }
+);
+
+const { currentImageID, isImageLoading } = useCurrentImage();
+const { slice: currentSlice, range: sliceRange } = useSliceConfig(
+  viewId,
+  currentImageID
+);
+
+whenever(
+  computed(() => !isImageLoading.value),
+  () => {
+    resetCamera();
+  }
+);
 </script>
 
 <template>

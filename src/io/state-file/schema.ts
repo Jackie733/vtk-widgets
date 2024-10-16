@@ -10,6 +10,7 @@ import { FrameOfReference } from '@/src/utils/frameOfReference';
 import type { Vector3 } from '@kitware/vtk.js/types';
 import JSZip from 'jszip';
 import { z } from 'zod';
+import { Tools as ToolsEnum } from '@/src/store/tools/types';
 
 export enum DatasetType {
   DICOM = 'dicom',
@@ -131,10 +132,17 @@ const FrameOfReference = z.object({
   planeNormal: Vector3,
 }) satisfies z.ZodType<FrameOfReference>;
 
+const ToolsEnumNative = z.nativeEnum(ToolsEnum);
+
+const Tools = z.object({
+  current: ToolsEnumNative,
+});
+
 export const ManifestSchema = z.object({
   version: z.string(),
   datasets: Dataset.array(),
   labelMaps: LabelMap.array(),
+  tools: Tools,
   views: View.array(),
   primarySelection: z.string().optional(),
   layout: Layout,
