@@ -2,11 +2,15 @@
 import { computed, ref, toRefs } from 'vue';
 import { storeToRefs } from 'pinia';
 import { whenever } from '@vueuse/core';
+import vtkMouseCameraTrackballPanManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballPanManipulator';
+import vtkMouseCameraTrackballZoomToMouseManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballZoomToMouseManipulator';
 import { LPSAxisDir } from '../types/lps';
 import VtkSliceView from './vtk/VtkSliceView.vue';
 import VtkBaseSliceRepresentation from './vtk/VtkBaseSliceRepresentation.vue';
 import VtkSliceViewWindowManipulator from './vtk/VtkSliceViewWindowManipulator.vue';
 import VtkSliceViewSlicingManipulator from './vtk/VtkSliceViewSlicingManipulator.vue';
+import VtkMouseInteractionManipulator from './vtk/VtkMouseInteractionManipulator.vue';
+import SliceSlider from './SliceSlider.vue';
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
 import { useCurrentImage } from '../composables/useCurrentImage';
@@ -54,7 +58,23 @@ whenever(
 </script>
 
 <template>
-  <div class="vtk-container-wrapper">
+  <div
+    class="vtk-container-wrapper"
+    @pointerenter="hover = true"
+    @pointerleave="hover = true"
+    @focusin="hover = true"
+    @focusout="hover = false"
+  >
+    <div class="vtk-gutter">
+      <SliceSlider
+        v-model="currentSlice"
+        class="slice-slider"
+        :min="sliceRange[0]"
+        :max="sliceRange[1]"
+        :step="1"
+        :handle-height="20"
+      />
+    </div>
     <div class="vtk-container">
       <div class="vtk-sub-container">
         <VtkSliceView
@@ -65,6 +85,32 @@ whenever(
           :view-direction="viewDirection"
           :view-up="viewUp"
         >
+          <VtkMouseInteractionManipulator
+            v-if="currentTool === Tools.Pan"
+            :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
+            :manipulator-props="{ button: 1 }"
+          ></VtkMouseInteractionManipulator>
+          <VtkMouseInteractionManipulator
+            :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
+            :manipulator-props="{ button: 1, shift: true }"
+          ></VtkMouseInteractionManipulator>
+          <VtkMouseInteractionManipulator
+            :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
+            :manipulator-props="{ button: 2 }"
+          ></VtkMouseInteractionManipulator>
+          <VtkMouseInteractionManipulator
+            v-if="currentTool === Tools.Zoom"
+            :manipulator-constructor="
+              vtkMouseCameraTrackballZoomToMouseManipulator
+            "
+            :manipulator-props="{ button: 1 }"
+          ></VtkMouseInteractionManipulator>
+          <VtkMouseInteractionManipulator
+            :manipulator-constructor="
+              vtkMouseCameraTrackballZoomToMouseManipulator
+            "
+            :manipulator-props="{ button: 3 }"
+          ></VtkMouseInteractionManipulator>
           <VtkBaseSliceRepresentation
             :view-id="viewId"
             :image-id="currentImageID"

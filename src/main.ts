@@ -12,6 +12,7 @@ import { initItkWorker } from './io/itk/worker';
 import { registerAllReaders } from './io/readers';
 import { FILE_READERS } from './io';
 import './global.css';
+import './reset.css';
 
 initItkWorker();
 registerAllReaders(FILE_READERS);
