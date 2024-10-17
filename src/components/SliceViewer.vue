@@ -4,13 +4,13 @@ import { storeToRefs } from 'pinia';
 import { whenever } from '@vueuse/core';
 import vtkMouseCameraTrackballPanManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballPanManipulator';
 import vtkMouseCameraTrackballZoomToMouseManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballZoomToMouseManipulator';
-import { isIP } from 'net';
 import { LPSAxisDir } from '../types/lps';
 import VtkSliceView from './vtk/VtkSliceView.vue';
 import VtkBaseSliceRepresentation from './vtk/VtkBaseSliceRepresentation.vue';
 import VtkSliceViewWindowManipulator from './vtk/VtkSliceViewWindowManipulator.vue';
 import VtkSliceViewSlicingManipulator from './vtk/VtkSliceViewSlicingManipulator.vue';
 import VtkMouseInteractionManipulator from './vtk/VtkMouseInteractionManipulator.vue';
+import SliceViewerOverlay from './SliceViewerOverlay.vue';
 import SliceSlider from './SliceSlider.vue';
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
@@ -134,6 +134,10 @@ whenever(
             :image-id="currentImageID"
             :manipulator-config="windowingManipulatorProps"
           ></VtkSliceViewWindowManipulator>
+          <SliceViewerOverlay
+            :view-id="id"
+            :image-id="currentImageID"
+          ></SliceViewerOverlay>
         </VtkSliceView>
       </div>
       <transition name="loading">
