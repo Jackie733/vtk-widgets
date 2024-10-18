@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import { useThrottleFn } from '@vueuse/core';
 import { storeToRefs } from 'pinia';
-import SplitButton from 'primevue/splitbutton';
+import Button from 'primevue/button';
+import ToolModule from './ToolModule.vue';
+import QuickInfo from './QuickInfo.vue';
 import { loadFiles, loadUserPromptedFiles } from '../actions/loadUserFiles';
 import useLoadDataStore from '../store/load-data';
+
+defineProps<{
+  hasData: boolean;
+}>();
 
 const { isLoading } = storeToRefs(useLoadDataStore());
 
@@ -13,28 +19,32 @@ const loadData = useThrottleFn(async () => {
   const sampleFile = new File([blob], 'sample.zip');
   loadFiles([sampleFile]);
 }, 1000);
-
-const items = [
-  {
-    label: 'Load Sample',
-    command: loadData,
-  },
-];
 </script>
 
 <template>
   <div class="bg-zinc-600 w-full h-12">
     <div class="flex items-center justify-between h-full px-4">
-      <div class="flex items-center space-x-2">
-        <SplitButton
+      <Button
+        label="Sample"
+        severity="secondary"
+        icon="pi pi-upload"
+        size="small"
+        :loading="isLoading"
+        @click="loadData"
+      />
+
+      <ToolModule></ToolModule>
+      <div>
+        <Button
+          v-if="hasData"
           size="small"
+          severity="secondary"
           label="Upload"
-          :model="items"
-          :disabled="isLoading"
-          :icon="isLoading ? 'pi pi-spin pi-spinner' : 'pi pi-upload'"
+          :loading="isLoading"
+          icon="pi pi-upload"
           @click="loadUserPromptedFiles"
-        >
-        </SplitButton>
+        />
+        <QuickInfo v-else />
       </div>
     </div>
   </div>
