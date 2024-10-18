@@ -20,7 +20,7 @@ const hasData = computed(() => {
 </script>
 
 <template>
-  <div class="bg-slate-800 w-screen h-screen">
+  <div class="bg-zinc-900 w-screen h-screen">
     <HeaderModule />
     <div class="h-[28rem] flex flex-col flex-grow">
       <LayoutGrid v-show="hasData" :layout="layout" />
