@@ -84,61 +84,61 @@ whenever(
     </div>
     <div class="vtk-container">
       <div class="vtk-sub-container">
-        <VtkSliceView
+        <vtk-slice-view
           class="vtk-view"
           ref="vtkView"
-          :view-id="viewId"
+          :view-id="id"
           :image-id="currentImageID"
           :view-direction="viewDirection"
           :view-up="viewUp"
         >
-          <VtkMouseInteractionManipulator
+          <vtk-mouse-interaction-manipulator
             v-if="currentTool === Tools.Pan"
             :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
             :manipulator-props="{ button: 1 }"
-          ></VtkMouseInteractionManipulator>
-          <VtkMouseInteractionManipulator
+          ></vtk-mouse-interaction-manipulator>
+          <vtk-mouse-interaction-manipulator
             :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
             :manipulator-props="{ button: 1, shift: true }"
-          ></VtkMouseInteractionManipulator>
-          <VtkMouseInteractionManipulator
+          ></vtk-mouse-interaction-manipulator>
+          <vtk-mouse-interaction-manipulator
             :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
             :manipulator-props="{ button: 2 }"
-          ></VtkMouseInteractionManipulator>
-          <VtkMouseInteractionManipulator
+          ></vtk-mouse-interaction-manipulator>
+          <vtk-mouse-interaction-manipulator
             v-if="currentTool === Tools.Zoom"
             :manipulator-constructor="
               vtkMouseCameraTrackballZoomToMouseManipulator
             "
             :manipulator-props="{ button: 1 }"
-          ></VtkMouseInteractionManipulator>
-          <VtkMouseInteractionManipulator
+          ></vtk-mouse-interaction-manipulator>
+          <vtk-mouse-interaction-manipulator
             :manipulator-constructor="
               vtkMouseCameraTrackballZoomToMouseManipulator
             "
             :manipulator-props="{ button: 3 }"
-          ></VtkMouseInteractionManipulator>
-          <VtkBaseSliceRepresentation
+          ></vtk-mouse-interaction-manipulator>
+          <vtk-base-slice-representation
             :view-id="viewId"
             :image-id="currentImageID"
             :axis="viewAxis"
           >
-          </VtkBaseSliceRepresentation>
-          <VtkSliceViewSlicingManipulator
-            :view-id="viewId"
-            :image-id="currentImageID"
-            :view-direction="viewDirection"
-          ></VtkSliceViewSlicingManipulator>
-          <VtkSliceViewWindowManipulator
-            :view-id="viewId"
-            :image-id="currentImageID"
-            :manipulator-config="windowingManipulatorProps"
-          ></VtkSliceViewWindowManipulator>
-          <SliceViewerOverlay
+          </vtk-base-slice-representation>
+          <vtk-slice-view-slicing-manipulator
             :view-id="id"
             :image-id="currentImageID"
-          ></SliceViewerOverlay>
-        </VtkSliceView>
+            :view-direction="viewDirection"
+          ></vtk-slice-view-slicing-manipulator>
+          <vtk-slice-view-window-manipulator
+            :view-id="id"
+            :image-id="currentImageID"
+            :manipulator-config="windowingManipulatorProps"
+          ></vtk-slice-view-window-manipulator>
+          <slice-viewer-overlay
+            :view-id="id"
+            :image-id="currentImageID"
+          ></slice-viewer-overlay>
+        </vtk-slice-view>
       </div>
       <transition name="loading">
         <div v-if="isImageLoading" class="overlay-no-events loading">

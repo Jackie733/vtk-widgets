@@ -22,7 +22,7 @@ const hasData = computed(() => {
 <template>
   <div class="bg-zinc-900 w-screen h-screen">
     <HeaderModule :has-data="hasData" />
-    <div class="h-full flex flex-col flex-grow">
+    <div class="h-[520px] flex flex-col flex-grow">
       <LayoutGrid v-show="hasData" :layout="layout" />
     </div>
   </div>
