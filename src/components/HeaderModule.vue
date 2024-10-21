@@ -36,7 +36,7 @@ const loadData = useThrottleFn(async () => {
       <ToolModule></ToolModule>
       <div>
         <Button
-          v-if="hasData"
+          v-if="!hasData"
           size="small"
           severity="secondary"
           label="Upload"
