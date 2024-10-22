@@ -3,6 +3,7 @@ import { defineStore } from 'pinia';
 import { Manifest, StateFile } from '@/src/io/state-file/schema';
 import { AnnotationToolType, IToolStore, Tools } from './types';
 import { AnnotationToolStore } from './useAnnotationTool';
+import { useCrosshairsToolStore } from './crosshairs';
 
 interface State {
   currentTool: Tools;
@@ -12,9 +13,9 @@ export const AnnotationToolStoreMap: Record<
   AnnotationToolType,
   () => AnnotationToolStore
 > = {
-  [AnnotationToolType.Polygon]: null,
-  [AnnotationToolType.Rectangle]: null,
-  [AnnotationToolType.Ruler]: null,
+  // [AnnotationToolType.Polygon]: null,
+  // [AnnotationToolType.Rectangle]: null,
+  // [AnnotationToolType.Ruler]: null,
 } as const;
 
 export const ToolStoreMap: Record<Tools, Maybe<() => IToolStore>> = {
@@ -22,6 +23,7 @@ export const ToolStoreMap: Record<Tools, Maybe<() => IToolStore>> = {
   [Tools.WindowLevel]: null,
   [Tools.Zoom]: null,
   [Tools.Select]: null,
+  [Tools.Crosshairs]: useCrosshairsToolStore,
 } as const;
 
 export function useAnnotationToolStore(

@@ -5,6 +5,7 @@ import 'primeicons/primeicons.css';
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import Tooltip from 'primevue/tooltip';
 import PrimeVue from 'primevue/config';
 import { definePreset } from '@primevue/themes';
 import Aura from '@primevue/themes/aura';
@@ -75,6 +76,9 @@ const MyPreset = definePreset(Aura, {
 });
 
 const app = createApp(App);
+
+app.directive('tooltip', Tooltip);
+
 app.use(PrimeVue, {
   theme: {
     preset: MyPreset,

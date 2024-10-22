@@ -1,4 +1,4 @@
-import { Manifest, StateFile } from '@/src/io/state-file/schema';
+import type { Manifest, StateFile } from '@/src/io/state-file/schema';
 import { Store } from 'pinia';
 
 export enum AnnotationToolType {

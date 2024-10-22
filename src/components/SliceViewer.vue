@@ -11,6 +11,7 @@ import VtkSliceViewWindowManipulator from './vtk/VtkSliceViewWindowManipulator.v
 import VtkSliceViewSlicingManipulator from './vtk/VtkSliceViewSlicingManipulator.vue';
 import VtkMouseInteractionManipulator from './vtk/VtkMouseInteractionManipulator.vue';
 import SliceViewerOverlay from './SliceViewerOverlay.vue';
+import CrosshairsTool from './tools/crosshairs/CrosshairsTool.vue';
 import SliceSlider from './SliceSlider.vue';
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
@@ -138,6 +139,11 @@ whenever(
             :view-id="id"
             :image-id="currentImageID"
           ></slice-viewer-overlay>
+          <crosshairs-tool
+            :view-id="viewId"
+            :image-id="currentImageID"
+            :view-direction="viewDirection"
+          />
         </vtk-slice-view>
       </div>
       <transition name="loading">

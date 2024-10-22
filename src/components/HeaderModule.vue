@@ -33,7 +33,7 @@ const loadData = useThrottleFn(async () => {
         @click="loadData"
       />
 
-      <ToolModule></ToolModule>
+      <ToolModule v-if="hasData"></ToolModule>
       <div>
         <Button
           v-if="!hasData"

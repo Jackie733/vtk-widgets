@@ -1,16 +1,16 @@
 import { WLAutoRanges } from '@/src/constants';
-import {
-  CameraConfig,
-  SliceConfig,
-  WindowLevelConfig,
-} from '@/src/store/view-configs/types';
 import { LayoutDirection } from '@/src/types/layout';
-import { LPSAxis } from '@/src/types/lps';
-import { FrameOfReference } from '@/src/utils/frameOfReference';
+import type { LPSAxis } from '@/src/types/lps';
+import type { FrameOfReference } from '@/src/utils/frameOfReference';
 import type { Vector3 } from '@kitware/vtk.js/types';
 import JSZip from 'jszip';
 import { z } from 'zod';
 import { Tools as ToolsEnum } from '@/src/store/tools/types';
+import type {
+  CameraConfig,
+  SliceConfig,
+  WindowLevelConfig,
+} from '../../store/view-configs/types';
 
 export enum DatasetType {
   DICOM = 'dicom',
@@ -132,9 +132,15 @@ const FrameOfReference = z.object({
   planeNormal: Vector3,
 }) satisfies z.ZodType<FrameOfReference>;
 
+const Crosshairs = z.object({
+  position: Vector3,
+});
+export type Crosshairs = z.infer<typeof Crosshairs>;
+
 const ToolsEnumNative = z.nativeEnum(ToolsEnum);
 
 const Tools = z.object({
+  crosshairs: Crosshairs,
   current: ToolsEnumNative,
 });
 
