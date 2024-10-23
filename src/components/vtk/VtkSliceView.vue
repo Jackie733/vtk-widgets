@@ -10,6 +10,9 @@ import { useResizeObserver, watchImmediate } from '@vueuse/core';
 import { effectScope, markRaw, onUnmounted, provide, ref, toRefs } from 'vue';
 import { Maybe } from '@/src/types';
 import { useImage } from '@/src/composables/useCurrentImage';
+import { usePersistCameraConfig } from '@/src/composables/usePersistCameraConfig';
+import { storeToRefs } from 'pinia';
+import useViewCameraStore from '@/src/store/view-configs/camera';
 import { VtkViewContext } from './context';
 
 interface Props {
@@ -20,18 +23,17 @@ interface Props {
   disableAutoResetCamera?: boolean;
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  disableAutoResetCamera: false,
-});
+const props = defineProps<Props>();
 const {
   viewId: viewID,
   imageId: imageID,
   viewDirection,
   viewUp,
-  disableAutoResetCamera,
 } = toRefs(props);
 
 const vtkContainerRef = ref<HTMLElement>();
+
+const { disableCameraAutoReset } = storeToRefs(useViewCameraStore());
 
 const { metadata: imageMetadata } = useImage(imageID);
 //
@@ -68,7 +70,7 @@ function autoFitImage() {
 }
 
 useResizeObserver(vtkContainerRef, () => {
-  if (disableAutoResetCamera.value) return;
+  if (disableCameraAutoReset.value) return;
   autoFitImage();
 });
 
@@ -85,10 +87,13 @@ function resetCamera() {
   autoFitImage();
 }
 
-watchImmediate([disableAutoResetCamera, viewID], ([noAutoReset]) => {
+watchImmediate([disableCameraAutoReset, viewID, imageID], ([noAutoReset]) => {
   if (noAutoReset) return;
   resetCamera();
 });
+
+// persistent camera config
+usePersistCameraConfig(viewID, imageID, view.renderer.getActiveCamera());
 
 const api: VtkViewApi = markRaw({
   ...view,

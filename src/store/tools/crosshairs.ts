@@ -61,7 +61,9 @@ export const useCrosshairsToolStore = defineStore('crosshairs', () => {
       const imageID = unref(currentImageID);
       const { lpsOrientation } = unref(currentImageMetadata);
 
-      if (!imageID) return;
+      if (!imageID) {
+        return;
+      }
 
       currentViewIDs.value.forEach((viewID) => {
         const sliceConfig = viewSliceStore.getConfig(viewID, imageID);
@@ -81,7 +83,8 @@ export const useCrosshairsToolStore = defineStore('crosshairs', () => {
       widgetState.setWorldToIndex(metadata.worldToIndex);
       const [xDim, yDim, zDim] = metadata.dimensions;
       const imageBounds: Bounds = [0, xDim - 1, 0, yDim - 1, 0, zDim - 1];
-      // inflate by o.5, since the image slice rendering is inflated by 0.5
+      // inflate by 0.5, since the image slice rendering is inflated
+      // by 0.5.
       handle.setBounds(inflate(imageBounds, 0.5));
     },
     { immediate: true }

@@ -1,23 +1,22 @@
 import type { Manifest, StateFile } from '@/src/io/state-file/schema';
 import { Store } from 'pinia';
 
-export enum AnnotationToolType {
-  Rectangle = 'Rectangle',
-  Ruler = 'Ruler',
-  Polygon = 'Polygon',
-}
+export enum AnnotationToolType {}
+// Rectangle = 'Rectangle',
+// Ruler = 'Ruler',
+// Polygon = 'Polygon',
 
 export enum Tools {
-  WindowLevel = 'WindowLevel',
-  Pan = 'Pan',
-  Zoom = 'Zoom',
-  Crop = 'Crop',
-  Paint = 'Paint',
-  Select = 'Select',
   Crosshairs = 'Crosshairs',
-  Rectangle = 'Rectangle',
-  Ruler = 'Ruler',
-  Polygon = 'Polygon',
+  WindowLevel = 'WindowLevel',
+  // Pan = 'Pan',
+  // Zoom = 'Zoom',
+  // Crop = 'Crop',
+  // Paint = 'Paint',
+  // Select = 'Select',
+  // Rectangle = 'Rectangle',
+  // Ruler = 'Ruler',
+  // Polygon = 'Polygon',
 }
 
 export interface IActivatableTool {

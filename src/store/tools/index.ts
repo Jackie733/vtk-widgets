@@ -19,10 +19,7 @@ export const AnnotationToolStoreMap: Record<
 } as const;
 
 export const ToolStoreMap: Record<Tools, Maybe<() => IToolStore>> = {
-  [Tools.Pan]: null,
   [Tools.WindowLevel]: null,
-  [Tools.Zoom]: null,
-  [Tools.Select]: null,
   [Tools.Crosshairs]: useCrosshairsToolStore,
 } as const;
 

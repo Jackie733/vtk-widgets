@@ -13,15 +13,17 @@ import VtkMouseInteractionManipulator from './vtk/VtkMouseInteractionManipulator
 import SliceViewerOverlay from './SliceViewerOverlay.vue';
 import CrosshairsTool from './tools/crosshairs/CrosshairsTool.vue';
 import SliceSlider from './SliceSlider.vue';
+import SelectTool from './tools/SelectTool.vue';
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
 import { useCurrentImage } from '../composables/useCurrentImage';
-import { useToolStore } from '../store/tools';
+import { useAnnotationToolStore, useToolStore } from '../store/tools';
 import { Tools } from '../store/tools/types';
 import { useSliceConfig } from '../composables/useSliceConfig';
 import { LayoutViewProps } from '../types';
 import { useResetViewsEvents } from './tools/ResetViews.vue';
 import { useViewAnimationListener } from '../composables/useViewAnimationListener';
+import { useToolSelectionStore } from '../store/tools/toolSelection';
 
 interface Props extends LayoutViewProps {
   viewDirection: LPSAxisDir;
@@ -63,6 +65,20 @@ whenever(
     resetCamera();
   }
 );
+
+// --- selection points --- //
+
+const selectionStore = useToolSelectionStore();
+const selectionPoints = computed(() => {
+  return selectionStore.selection
+    .map((sel) => {
+      const store = useAnnotationToolStore(sel.type);
+      return { store, tool: store.toolByID[sel.id] };
+    })
+    .filter(({ tool }) => tool.slice === currentSlice.value)
+    .flatMap(({ store, tool }) => store.getPoints(tool.id));
+});
+console.log(selectionPoints);
 </script>
 
 <template>
@@ -93,11 +109,11 @@ whenever(
           :view-direction="viewDirection"
           :view-up="viewUp"
         >
-          <vtk-mouse-interaction-manipulator
+          <!-- <vtk-mouse-interaction-manipulator
             v-if="currentTool === Tools.Pan"
             :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
             :manipulator-props="{ button: 1 }"
-          ></vtk-mouse-interaction-manipulator>
+          ></vtk-mouse-interaction-manipulator> -->
           <vtk-mouse-interaction-manipulator
             :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
             :manipulator-props="{ button: 1, shift: true }"
@@ -106,13 +122,13 @@ whenever(
             :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
             :manipulator-props="{ button: 2 }"
           ></vtk-mouse-interaction-manipulator>
-          <vtk-mouse-interaction-manipulator
+          <!-- <vtk-mouse-interaction-manipulator
             v-if="currentTool === Tools.Zoom"
             :manipulator-constructor="
               vtkMouseCameraTrackballZoomToMouseManipulator
             "
             :manipulator-props="{ button: 1 }"
-          ></vtk-mouse-interaction-manipulator>
+          ></vtk-mouse-interaction-manipulator> -->
           <vtk-mouse-interaction-manipulator
             :manipulator-constructor="
               vtkMouseCameraTrackballZoomToMouseManipulator
@@ -144,6 +160,7 @@ whenever(
             :image-id="currentImageID"
             :view-direction="viewDirection"
           />
+          <select-tool />
         </vtk-slice-view>
       </div>
       <transition name="loading">

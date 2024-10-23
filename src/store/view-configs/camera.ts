@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { reactive } from 'vue';
+import { reactive, ref } from 'vue';
 import {
   deleteSecondKey,
   DoubleKeyRecord,
@@ -7,24 +7,15 @@ import {
   patchDoubleKeyRecord,
 } from '@/src/utils/doubleKeyRecord';
 import { Maybe } from '@/src/types';
-import { clampValue } from '@kitware/vtk.js/Common/Core/Math';
-import { ViewConfig } from '@/src/io/state-file/schema';
 import { useCurrentImage } from '@/src/composables/useCurrentImage';
-import { SliceConfig } from './types';
-import { createViewConfigSerializer } from './common';
+import { ViewConfig } from '@/src/io/state-file/schema';
 import { useImageStore } from '../images';
+import { CameraConfig } from './types';
+import { createViewConfigSerializer } from './common';
 
-export const defaultSliceConfig = (): SliceConfig => ({
-  slice: 0,
-  min: 0,
-  max: 0,
-  axisDirection: 'Inferior',
-  syncState: false,
-});
-
-export const useViewSliceStore = defineStore('viewSlice', () => {
+export const useViewCameraStore = defineStore('viewCamera', () => {
   const imageStore = useImageStore();
-  const configs = reactive<DoubleKeyRecord<SliceConfig>>({});
+  const configs = reactive<DoubleKeyRecord<CameraConfig>>({});
 
   const getConfig = (viewID: Maybe<string>, dataID: Maybe<string>) =>
     getDoubleKeyRecord(configs, viewID, dataID);
@@ -32,28 +23,20 @@ export const useViewSliceStore = defineStore('viewSlice', () => {
   const updateConfig = (
     viewID: string,
     dataID: string,
-    patch: Partial<SliceConfig>
+    patch: Partial<CameraConfig>
   ) => {
     const config = {
-      ...defaultSliceConfig(),
       ...getConfig(viewID, dataID),
       ...patch,
     };
 
-    config.slice = clampValue(config.slice, config.min, config.max);
     patchDoubleKeyRecord(configs, viewID, dataID, config);
   };
 
-  const resetSlice = (viewID: string, dataID: string) => {
-    const config = getConfig(viewID, dataID);
-    if (!config) return;
+  const disableCameraAutoReset = ref(false);
 
-    // Setting this to floor() will affect images where the
-    // middle slice is fractional.
-    // This is consistent with vtkImageMapper and SliceRepresentationProxy
-    updateConfig(viewID, dataID, {
-      slice: Math.ceil((config.min + config.max) / 2),
-    });
+  const toggleCameraAutoReset = () => {
+    disableCameraAutoReset.value = !disableCameraAutoReset.value;
   };
 
   const removeView = (viewID: string) => {
@@ -68,11 +51,11 @@ export const useViewSliceStore = defineStore('viewSlice', () => {
     }
   };
 
-  const toggleSyncImages = () => {
+  const toggleSyncCameras = () => {
+    // Synchronize all cameras when toggled
     Object.keys(configs).forEach((viewID) => {
       imageStore.idList.forEach((imageID) => {
         const { syncState } = {
-          ...defaultSliceConfig(),
           ...getConfig(viewID, imageID),
         };
         updateConfig(viewID, imageID, { syncState: !syncState });
@@ -93,22 +76,26 @@ export const useViewSliceStore = defineStore('viewSlice', () => {
       const config = getConfig(viewID, currentImageID.value);
       imageStore.idList.forEach((imageID) => {
         const { syncState } = {
-          ...defaultSliceConfig(),
           ...getConfig(viewID, imageID),
         };
+
         if (syncState) {
-          updateConfig(viewID, imageID, { slice: config?.slice });
+          updateConfig(viewID, imageID, {
+            position: config?.position,
+            focalPoint: config?.focalPoint,
+            parallelScale: config?.parallelScale,
+          });
         }
       });
     });
   };
 
-  const serialize = createViewConfigSerializer(configs, 'slice');
+  const serialize = createViewConfigSerializer(configs, 'camera');
 
   const deserialize = (viewID: string, config: Record<string, ViewConfig>) => {
     Object.entries(config).forEach(([dataID, viewConfig]) => {
-      if (viewConfig.slice) {
-        updateConfig(viewID, dataID, viewConfig.slice);
+      if (viewConfig.camera) {
+        updateConfig(viewID, dataID, viewConfig.camera);
       }
     });
   };
@@ -117,13 +104,16 @@ export const useViewSliceStore = defineStore('viewSlice', () => {
     configs,
     getConfig,
     updateConfig,
-    resetSlice,
+    disableCameraAutoReset,
+    toggleCameraAutoReset,
     removeView,
     removeData,
-    toggleSyncImages,
+    toggleSyncCameras,
     updateSyncConfigs,
     isSync,
     serialize,
     deserialize,
   };
 });
+
+export default useViewCameraStore;

@@ -1,16 +1,17 @@
-import vtkInteractorStyle from "@kitware/vtk.js/Rendering/Core/InteractorStyle";
-import { View, VtkObjectConstructor } from "./types";
-import { vtkWarningMacro } from "@kitware/vtk.js/macros";
-import { onScopeDispose } from "vue";
+import vtkInteractorStyle from '@kitware/vtk.js/Rendering/Core/InteractorStyle';
+import { vtkWarningMacro } from '@kitware/vtk.js/macros';
+import { onScopeDispose } from 'vue';
+import type { View } from './types';
+import { VtkObjectConstructor } from './types';
 
 export function useVtkInteractorStyle<T extends vtkInteractorStyle>(
   vtkCtor: VtkObjectConstructor<T>,
-  view: View,
+  view: View
 ) {
   const style = vtkCtor.newInstance();
 
   if (view.interactor.getInteractorStyle()) {
-    vtkWarningMacro("Overwriting an already set interactor style");
+    vtkWarningMacro('Overwriting an already set interactor style');
   }
   view.interactor.setInteractorStyle(style);
 

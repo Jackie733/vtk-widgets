@@ -1,14 +1,20 @@
-import vtkPlanePointManipulator from '@kitware/vtk.js/Widgets/Manipulators/PlaneManipulator';
-import { ViewTypes } from '@kitware/vtk.js/Widgets/Core/WidgetManager/Constants';
-import vtkAbstractWidgetFactory from '@kitware/vtk.js/Widgets/Core/AbstractWidgetFactory';
 import macro from '@kitware/vtk.js/macro';
+import vtkAbstractWidgetFactory from '@kitware/vtk.js/Widgets/Core/AbstractWidgetFactory';
+import vtkPlanePointManipulator from '@kitware/vtk.js/Widgets/Manipulators/PlaneManipulator';
+
+import { ViewTypes } from '@kitware/vtk.js/Widgets/Core/WidgetManager/Constants';
+
 import stateGenerator from './state';
 import widgetBehavior from './behavior';
+
+// ----------------------------------------------------------------------------
+// Factory
+// ----------------------------------------------------------------------------
 
 function vtkCrosshairsWidget(publicAPI, model) {
   model.classHierarchy.push('vtkCrosshairsWidget');
 
-  // --- Widget Requirement ---
+  // --- Widget Requirement ---------------------------------------------------
 
   model.behavior = widgetBehavior;
   model.widgetState = stateGenerator();
@@ -58,6 +64,10 @@ export function extend(publicAPI, model, initialValues = {}) {
   vtkCrosshairsWidget(publicAPI, model);
 }
 
+// ----------------------------------------------------------------------------
+
 export const newInstance = macro.newInstance(extend, 'vtkCrosshairsWidget');
+
+// ----------------------------------------------------------------------------
 
 export default { newInstance, extend };
