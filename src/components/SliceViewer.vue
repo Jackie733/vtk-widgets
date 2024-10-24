@@ -109,11 +109,11 @@ console.log(selectionPoints);
           :view-direction="viewDirection"
           :view-up="viewUp"
         >
-          <!-- <vtk-mouse-interaction-manipulator
+          <vtk-mouse-interaction-manipulator
             v-if="currentTool === Tools.Pan"
             :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
             :manipulator-props="{ button: 1 }"
-          ></vtk-mouse-interaction-manipulator> -->
+          ></vtk-mouse-interaction-manipulator>
           <vtk-mouse-interaction-manipulator
             :manipulator-constructor="vtkMouseCameraTrackballPanManipulator"
             :manipulator-props="{ button: 1, shift: true }"
@@ -135,12 +135,6 @@ console.log(selectionPoints);
             "
             :manipulator-props="{ button: 3 }"
           ></vtk-mouse-interaction-manipulator>
-          <vtk-base-slice-representation
-            :view-id="viewId"
-            :image-id="currentImageID"
-            :axis="viewAxis"
-          >
-          </vtk-base-slice-representation>
           <vtk-slice-view-slicing-manipulator
             :view-id="id"
             :image-id="currentImageID"
@@ -155,6 +149,12 @@ console.log(selectionPoints);
             :view-id="id"
             :image-id="currentImageID"
           ></slice-viewer-overlay>
+          <vtk-base-slice-representation
+            :view-id="viewId"
+            :image-id="currentImageID"
+            :axis="viewAxis"
+          >
+          </vtk-base-slice-representation>
           <crosshairs-tool
             :view-id="viewId"
             :image-id="currentImageID"

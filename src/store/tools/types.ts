@@ -9,7 +9,7 @@ export enum AnnotationToolType {}
 export enum Tools {
   Crosshairs = 'Crosshairs',
   WindowLevel = 'WindowLevel',
-  // Pan = 'Pan',
+  Pan = 'Pan',
   // Zoom = 'Zoom',
   // Crop = 'Crop',
   // Paint = 'Paint',

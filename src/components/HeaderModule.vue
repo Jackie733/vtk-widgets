@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useThrottleFn } from '@vueuse/core';
+import { Upload } from '@element-plus/icons-vue';
 import { storeToRefs } from 'pinia';
-import Button from 'primevue/button';
 import ToolModule from './ToolModule.vue';
-import QuickInfo from './QuickInfo.vue';
+// import QuickInfo from './QuickInfo.vue';
 import { loadFiles, loadUserPromptedFiles } from '../actions/loadUserFiles';
 import useLoadDataStore from '../store/load-data';
 
@@ -24,27 +24,24 @@ const loadData = useThrottleFn(async () => {
 <template>
   <div class="bg-zinc-600 w-full h-12">
     <div class="flex items-center justify-between h-full px-4">
-      <Button
-        label="Sample"
-        severity="secondary"
-        icon="pi pi-upload"
-        size="small"
+      <el-button
+        :icon="Upload"
         :loading="isLoading"
+        size="small"
         @click="loadData"
-      />
-
+        >Sample</el-button
+      >
       <ToolModule v-if="hasData"></ToolModule>
       <div>
-        <Button
+        <el-button
           v-if="!hasData"
-          size="small"
-          severity="secondary"
-          label="Upload"
+          :icon="Upload"
           :loading="isLoading"
-          icon="pi pi-upload"
+          size="small"
           @click="loadUserPromptedFiles"
-        />
-        <QuickInfo v-else />
+          >Upload</el-button
+        >
+        <!-- <QuickInfo v-else /> -->
       </div>
     </div>
   </div>

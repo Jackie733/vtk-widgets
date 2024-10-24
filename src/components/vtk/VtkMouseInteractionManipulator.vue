@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { VtkObjectConstructor } from '@/src/core/vtk/types';
 import vtkCompositeMouseManipulator, {
   type ICompositeMouseManipulatorInitialValues,
 } from '@kitware/vtk.js/Interaction/Manipulators/CompositeMouseManipulator';
-import { computed, inject, toRefs } from 'vue';
-import { Maybe } from '@/src/types';
-import vtkInteractorStyleManipulator from '@kitware/vtk.js/Interaction/Style/InteractorStyleManipulator';
 import { useVtkInteractionManipulator } from '@/src/core/vtk/useVtkInteractionManipulator';
-import { VtkViewContext } from './context';
+import { toRefs, inject, computed } from 'vue';
+import { VtkViewContext } from '@/src/components/vtk/context';
+import vtkInteractorStyleManipulator from '@kitware/vtk.js/Interaction/Style/InteractorStyleManipulator';
+import type { Maybe } from '@/src/types';
+import type { VtkObjectConstructor } from '@/src/core/vtk/types';
 
 interface Props {
   manipulatorConstructor: VtkObjectConstructor<vtkCompositeMouseManipulator>;
@@ -42,6 +42,4 @@ defineExpose({
 });
 </script>
 
-<template>
-  <slot></slot>
-</template>
+<template><slot></slot></template>

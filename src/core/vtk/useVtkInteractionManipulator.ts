@@ -15,6 +15,12 @@ function addManipulator(style: vtkInteractorStyleManipulator, manip: any) {
 }
 
 function removeManipulator(style: vtkInteractorStyleManipulator, manip: any) {
+  console.log(
+    'removeManipulator',
+    manip,
+    manip.isA('vtkCompositeMouseManipulator')
+  );
+
   if (manip.isA('vtkCompositeMouseManipulator')) {
     style.removeMouseManipulator(manip);
   } else if (manip.isA('vtkCompositeGestureManipulator')) {

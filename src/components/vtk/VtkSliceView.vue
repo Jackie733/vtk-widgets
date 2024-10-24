@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { useAutoFitState } from '@/src/composables/useAutoFitState';
-import { useVtkInteractorStyle } from '@/src/core/vtk/useVtkInteractorStyle';
-import { useVtkView } from '@/src/core/vtk/useVtkView';
-import { LPSAxisDir } from '@/src/types/lps';
-import { VtkViewApi } from '@/src/types/vtk-types';
-import { resetCameraToImage, resizeToFitImage } from '@/src/utils/camera';
-import vtkInteractorStyleManipulator from '@kitware/vtk.js/Interaction/Style/InteractorStyleManipulator';
-import { useResizeObserver, watchImmediate } from '@vueuse/core';
-import { effectScope, markRaw, onUnmounted, provide, ref, toRefs } from 'vue';
-import { Maybe } from '@/src/types';
-import { useImage } from '@/src/composables/useCurrentImage';
-import { usePersistCameraConfig } from '@/src/composables/usePersistCameraConfig';
+import { ref, toRefs, provide, markRaw, effectScope, onUnmounted } from 'vue';
 import { storeToRefs } from 'pinia';
-import useViewCameraStore from '@/src/store/view-configs/camera';
-import { VtkViewContext } from './context';
+import vtkInteractorStyleManipulator from '@kitware/vtk.js/Interaction/Style/InteractorStyleManipulator';
+import { useVtkView } from '@/src/core/vtk/useVtkView';
+import { useImage } from '@/src/composables/useCurrentImage';
+import { useVtkInteractorStyle } from '@/src/core/vtk/useVtkInteractorStyle';
+import { LPSAxisDir } from '@/src/types/lps';
+import { useResizeObserver, watchImmediate } from '@vueuse/core';
+import { resetCameraToImage, resizeToFitImage } from '@/src/utils/camera';
+import { usePersistCameraConfig } from '@/src/composables/usePersistCameraConfig';
+import { useAutoFitState } from '@/src/composables/useAutoFitState';
+import { Maybe } from '@/src/types';
+import { VtkViewApi } from '@/src/types/vtk-types';
+import { VtkViewContext } from '@/src/components/vtk/context';
+import { useViewCameraStore } from '@/src/store/view-configs/camera';
 
 interface Props {
   viewId: string;

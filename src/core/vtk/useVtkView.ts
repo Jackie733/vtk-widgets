@@ -77,9 +77,9 @@ export function useVtkView(container: MaybeRef<Maybe<HTMLElement>>): View {
     if (!el) return;
 
     interactor.initialize();
-    interactor.setContainer(el as HTMLElement);
+    interactor.bindEvents(el);
     onCleanup(() => {
-      if (interactor.getContainer()) interactor.setContainer(null);
+      if (interactor.getContainer()) interactor.unbindEvents();
     });
   });
 

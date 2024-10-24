@@ -20,6 +20,11 @@ export function useSliceConfig(
       const imageIdVal = unref(imageID);
       if (!imageIdVal || val == null) return;
       store.updateConfig(unref(viewID), imageIdVal, { slice: val });
+
+      // Update other synchronized views if any
+      if (config.value?.syncState) {
+        store.updateSyncConfigs();
+      }
     },
   });
 

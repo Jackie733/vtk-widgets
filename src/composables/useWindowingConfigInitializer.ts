@@ -1,5 +1,5 @@
 import { MaybeRef, computed, unref, watch } from 'vue';
-import { TypedArray } from '@kitware/vtk.js/types';
+import type { TypedArray } from '@kitware/vtk.js/types';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import { watchImmediate } from '@vueuse/core';
 import { useResetViewsEvents } from '@/src/components/tools/ResetViews.vue';

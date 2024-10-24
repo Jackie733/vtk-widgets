@@ -1,39 +1,59 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import SelectButton from 'primevue/selectbutton';
+import { computed } from 'vue';
+import ItemGroup from './ItemGroup.vue';
+import GroupableItem from './GroupableItem.vue';
+import ControlButton from './ControlButton.vue';
 import { Tools } from '../store/tools/types';
 import { useToolStore } from '../store/tools';
+import { useDatasetStore } from '../store/datasets';
 
-const value = ref(null);
-const options = ref([
-  { icon: 'pi pi-map-marker', value: 'Label' },
-  { icon: 'pi pi-plus', value: Tools.Crosshairs },
-]);
-
+const dataStore = useDatasetStore();
 const toolStore = useToolStore();
 
-function handleChange(obj: any) {
-  console.log('Changed', obj.value);
-  toolStore.setCurrentTool(obj.value);
-}
+const noCurrentImage = computed(() => !dataStore.primaryDataset);
+const currentTool = computed(() => toolStore.currentTool);
 </script>
 
 <template>
-  <div>
-    <SelectButton
-      v-model="value"
-      :options="options"
-      optionLabel="value"
-      dataKey="value"
-      aria-labelledby="custom"
-      @update:model-value="handleChange"
+  <div class="flex">
+    <item-group
+      mandatory
+      :model-value="currentTool"
+      @update:model-value="toolStore.setCurrentTool"
     >
-      <template #option="slotProps">
-        <i
-          v-tooltip.bottom="slotProps.option.value"
-          :class="slotProps.option.icon"
-        ></i>
-      </template>
-    </SelectButton>
+      <groupable-item
+        v-slot:default="{ active, toggle }"
+        :value="Tools.WindowLevel"
+      >
+        <control-button
+          :icon="Tools.WindowLevel"
+          name="Window & Level"
+          :active="active"
+          :disabled="noCurrentImage"
+          @click="toggle"
+        />
+      </groupable-item>
+      <groupable-item v-slot:default="{ active, toggle }" :value="Tools.Pan">
+        <control-button
+          :icon="Tools.Pan"
+          name="Pan"
+          :active="active"
+          :disabled="noCurrentImage"
+          @click="toggle"
+        />
+      </groupable-item>
+      <groupable-item
+        v-slot:default="{ active, toggle }"
+        :value="Tools.Crosshairs"
+      >
+        <control-button
+          :icon="Tools.Crosshairs"
+          name="Crosshairs"
+          :active="active"
+          :disabled="noCurrentImage"
+          @click="toggle"
+        />
+      </groupable-item>
+    </item-group>
   </div>
 </template>

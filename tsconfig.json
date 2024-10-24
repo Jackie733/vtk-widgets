@@ -15,7 +15,7 @@
     "baseUrl": ".",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "types": ["node"],
+    "types": ["vite/client", "node", "element-plus/global"],
     "paths": {
       "@/*": ["./*"]
     },
@@ -23,6 +23,7 @@
   },
   "include": [
     "src/**/*.ts",
+    "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
     "test/**/*.ts",

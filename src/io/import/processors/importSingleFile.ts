@@ -4,6 +4,10 @@ import { FILE_READERS } from '@/src/io';
 import { ImportHandler } from '@/src/io/import/common';
 import { DataSourceWithFile } from '@/src/io/import/dataSource';
 import { useFileStore } from '@/src/store/files';
+import { useViewStore } from '@/src/store/views';
+import { InitViewSpecs } from '@/src/config';
+import { getLPSAxisFromDir } from '@/src/utils/lps';
+import { useViewSliceStore } from '@/src/store/view-configs/slicing';
 
 /**
  * Reads and imports a file DataSource.
@@ -31,6 +35,21 @@ const importSingleFile: ImportHandler = async (dataSource, { done }) => {
       dataObject as vtkImageData
     );
     fileStore.add(dataID, [dataSource as DataSourceWithFile]);
+
+    useViewStore().viewIDs.forEach((viewID: string) => {
+      const { lpsOrientation, dimensions } = useImageStore().metadata[dataID];
+      const axisDir = InitViewSpecs[viewID].props.viewDirection;
+      const lpsFromDir = getLPSAxisFromDir(axisDir);
+      const lpsOrient = lpsOrientation[lpsFromDir];
+
+      const dimMax = dimensions[lpsOrient];
+
+      useViewSliceStore().updateConfig(viewID, dataID, {
+        axisDirection: axisDir,
+        max: dimMax - 1,
+      });
+      useViewSliceStore().resetSlice(viewID, dataID);
+    });
 
     return done({
       dataID,

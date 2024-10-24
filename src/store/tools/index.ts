@@ -19,6 +19,7 @@ export const AnnotationToolStoreMap: Record<
 } as const;
 
 export const ToolStoreMap: Record<Tools, Maybe<() => IToolStore>> = {
+  [Tools.Pan]: null,
   [Tools.WindowLevel]: null,
   [Tools.Crosshairs]: useCrosshairsToolStore,
 } as const;
@@ -77,6 +78,7 @@ export const useToolStore = defineStore('tool', {
       dataIDMap: Record<string, string>
     ) {
       const { tools } = manifest;
+      console.log(segmentGroupIDMap, dataIDMap);
 
       // usePaintToolStore().deserialize(manifest, segmentGroupIDMap);
       // TODO:
