@@ -39,6 +39,10 @@ export function removeFromArray<T>(arr: Array<T>, el: T) {
   }
 }
 
+export function clampValue(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
 export function pick<T, K extends keyof T>(obj: T, ...keys: K[]): Pick<T, K> {
   return keys.reduce((o, k) => ({ ...o, [k]: obj[k] }), {} as Pick<T, K>);
 }

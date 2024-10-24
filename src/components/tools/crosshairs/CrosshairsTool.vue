@@ -20,7 +20,7 @@ import { Tools } from '@/src/store/tools/types';
 import { Maybe } from '@/src/types';
 import { LPSAxisDir } from '@/src/types/lps';
 import { getLPSAxisFromDir } from '@/src/utils/lps';
-import { clampValue } from '@kitware/vtk.js/Common/Core/Math';
+import { clampValue } from '@/src/utils';
 import { storeToRefs } from 'pinia';
 import { computed, defineComponent, PropType, toRefs } from 'vue';
 import CrosshairsWidget2D from './CrosshairsWidget2D.vue';

@@ -163,14 +163,13 @@ console.log(selectionPoints);
           <select-tool />
         </vtk-slice-view>
       </div>
-      <transition name="loading">
-        <div v-if="isImageLoading" class="overlay-no-events loading">
-          <div>Loading</div>
-          <div>
-            <i class="pi pi-spin pi-spinner"></i>
-          </div>
-        </div>
-      </transition>
+      <div
+        v-if="isImageLoading"
+        v-loading="true"
+        element-loading-text="Loading..."
+        element-loading-background="rgba(122, 122, 122, 0.5)"
+        class="overlay-no-events loading"
+      ></div>
     </div>
   </div>
 </template>

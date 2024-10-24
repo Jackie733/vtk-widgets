@@ -15,7 +15,7 @@ const currentTool = computed(() => toolStore.currentTool);
 </script>
 
 <template>
-  <div class="flex">
+  <div class="flex gap-1">
     <item-group
       mandatory
       :model-value="currentTool"
