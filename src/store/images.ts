@@ -20,9 +20,9 @@ export const defaultImageMetadata = () => ({
 });
 
 interface State {
-  idList: string[];
-  dataIndex: Record<string, vtkImageData>;
-  metadata: Record<string, ImageMetadata>;
+  idList: string[]; // list of IDs
+  dataIndex: Record<string, vtkImageData>; // ID -> VTK object
+  metadata: Record<string, ImageMetadata>; // ID -> metadata
 }
 
 export const useImageStore = defineStore('images', {
@@ -45,18 +45,6 @@ export const useImageStore = defineStore('images', {
       this.metadata[id] = { ...defaultImageMetadata(), name };
       this.updateData(id, imageData);
       return id;
-
-      // this.metadata = {
-      //   name,
-      //   dimensions: imageData.getDimensions(),
-      //   spacing: imageData.getSpacing(),
-      //   origin: imageData.getOrigin(),
-      //   orientation: imageData.getDirection(),
-      //   lpsOrientation: getLPSDirections(imageData.getDirection()),
-      //   worldBounds: imageData.getBounds(),
-      //   worldToIndex: imageData.getWorldToIndex(),
-      //   indexToWorld: imageData.getIndexToWorld(),
-      // };
     },
     updateData(id: string, imageData: vtkImageData) {
       if (id in this.metadata) {
@@ -65,7 +53,7 @@ export const useImageStore = defineStore('images', {
           dimensions: imageData.getDimensions() as vec3,
           spacing: imageData.getSpacing() as vec3,
           origin: imageData.getOrigin() as vec3,
-          orientation: imageData.getDirection() as mat3,
+          orientation: imageData.getDirection(),
           lpsOrientation: getLPSDirections(imageData.getDirection()),
           worldBounds: imageData.getBounds(),
           worldToIndex: imageData.getWorldToIndex(),

@@ -6,6 +6,7 @@ import { useDICOMStore } from '@/src/store/dicom';
 import {
   ImportHandler,
   ImportResult,
+  isConfigResult,
   isLoadableResult,
   VolumeResult,
 } from './common';
@@ -18,6 +19,7 @@ import handleDicomFile from './processors/handleDicomFile';
 import restoreStateFile from './processors/restoreStateFile';
 import importSingleFile from './processors/importSingleFile';
 import handleConfig from './processors/handleConfig';
+import { applyConfig } from './configJson';
 
 /**
  * Tries to turn a thrown object into a meaningful error string.
@@ -48,6 +50,36 @@ function isSelectable(
 
   return true;
 }
+
+const importConfigs = async (
+  results: Array<PipelineResult<DataSource, ImportResult>>
+) => {
+  try {
+    results
+      .flatMap((pipelineResult) =>
+        pipelineResult.ok ? pipelineResult.data : []
+      )
+      .filter(isConfigResult)
+      .map(({ config }) => config)
+      .forEach(applyConfig);
+
+    return {
+      ok: true as const,
+      data: [],
+    };
+  } catch (err) {
+    return {
+      ok: false as const,
+      errors: [
+        {
+          message: toMeaningfulErrorString(err),
+          cause: err,
+          inputDataStackTrace: [],
+        },
+      ],
+    };
+  }
+};
 
 const importDicomFiles = async (
   dicomDataSources: Array<DataSourceWithFile>
@@ -111,13 +143,15 @@ export async function importDataSources(dataSources: DataSource[]) {
     dataSources.map((r) => loader.execute(r, importContext))
   );
 
+  const configResult = await importConfigs(results);
   const dicomResult = await importDicomFiles(importContext.dicomDataSources);
-  console.log(dicomResult, results);
+  console.log('DATA: ', configResult, dicomResult, results);
 
-  return [...results, dicomResult].filter(
+  return [...results, dicomResult, configResult].filter(
     (result) => !result.ok || isSelectable(result)
   );
 }
+
 export type ImportDataSourcesResult = Awaited<
   ReturnType<typeof importDataSources>
 >[number];

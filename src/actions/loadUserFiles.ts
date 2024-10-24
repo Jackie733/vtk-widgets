@@ -125,6 +125,7 @@ function loadDataSources(sources: DataSource[]) {
     }
 
     const [succeeded, errored] = partitionResults(results);
+    console.log('Import Data Results:', succeeded, errored);
 
     if (!dataStore.primarySelection && succeeded.length) {
       const primaryDataSource = findBaseDataSource(
@@ -134,6 +135,7 @@ function loadDataSources(sources: DataSource[]) {
 
       if (isVolumeResult(primaryDataSource)) {
         const selection = toDataSelection(primaryDataSource);
+        console.log('Primary Selection:', selection, primaryDataSource);
         dataStore.setPrimarySelection(selection);
         // loadLayers(primaryDataSource, succeeded);
         // loadSegmentations(

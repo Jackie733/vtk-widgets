@@ -7,7 +7,7 @@ const handleConfig: ImportHandler = async (dataSource, { done }) => {
   if (fileSrc?.fileType === 'application/json') {
     try {
       const manifest = await readConfigFile(fileSrc.file);
-      // Dont't consume JSON if it has no known key
+      // Don't consume JSON if it has no known key
       if (Object.keys(manifest).length === 0) {
         return dataSource;
       }

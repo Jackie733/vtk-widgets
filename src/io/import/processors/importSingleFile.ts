@@ -36,6 +36,7 @@ const importSingleFile: ImportHandler = async (dataSource, { done }) => {
     );
     fileStore.add(dataID, [dataSource as DataSourceWithFile]);
 
+    // Create a default view for each viewID
     useViewStore().viewIDs.forEach((viewID: string) => {
       const { lpsOrientation, dimensions } = useImageStore().metadata[dataID];
       const axisDir = InitViewSpecs[viewID].props.viewDirection;

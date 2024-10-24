@@ -7,7 +7,7 @@ import {
   patchDoubleKeyRecord,
 } from '@/src/utils/doubleKeyRecord';
 import { Maybe } from '@/src/types';
-import { clampValue } from '@kitware/vtk.js/Common/Core/Math';
+import { clampValue } from '@/src/utils';
 import { ViewConfig } from '@/src/io/state-file/schema';
 import { useCurrentImage } from '@/src/composables/useCurrentImage';
 import { SliceConfig } from './types';
@@ -17,7 +17,7 @@ import { useImageStore } from '../images';
 export const defaultSliceConfig = (): SliceConfig => ({
   slice: 0,
   min: 0,
-  max: 0,
+  max: 1,
   axisDirection: 'Inferior',
   syncState: false,
 });
