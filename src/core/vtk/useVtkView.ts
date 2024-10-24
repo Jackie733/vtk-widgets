@@ -83,9 +83,12 @@ export function useVtkView(container: MaybeRef<Maybe<HTMLElement>>): View {
     });
   });
 
+  // widget manager
   const widgetManager = useWidgetManager(renderer);
 
+  // render API
   const deferredRender = batchForNextTask(() => {
+    // don't need to re-render during animation
     if (interactor.isAnimating()) return;
     widgetManager.renderWidgets();
     renderWindow.render();

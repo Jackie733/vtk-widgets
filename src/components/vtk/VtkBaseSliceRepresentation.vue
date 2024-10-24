@@ -25,15 +25,18 @@ if (!view) throw new Error('No VtkView');
 
 const { metadata: imageMetadata, imageData } = useImage(imageID);
 
+// bind slice and window configs
 const sliceConfig = useSliceConfig(viewID, imageID);
 const wlConfig = useWindowingConfig(viewID, imageID);
 
+// setup base image
 const sliceRep = useSliceRepresentation(view, imageData);
 
 // set slice ordering to be in the back
 sliceRep.mapper.setResolveCoincidentTopologyToPolygonOffset();
 sliceRep.mapper.setResolveCoincidentTopologyPolygonOffsetParameters(1, 1);
 
+// set slicing mode
 watchEffect(() => {
   const { lpsOrientation } = imageMetadata.value;
   const ijkIndex = lpsOrientation[axis.value];
@@ -41,9 +44,11 @@ watchEffect(() => {
   sliceRep.mapper.setSlicingMode(mode);
 });
 
+// sync slicing
 const slice = vtkFieldRef(sliceRep.mapper, 'slice');
 syncRefs(sliceConfig.slice, slice, { immediate: true });
 
+// sync windowing
 const colorLevel = vtkFieldRef(sliceRep.property, 'colorLevel');
 const colorWindow = vtkFieldRef(sliceRep.property, 'colorWindow');
 syncRefs(wlConfig.level, colorLevel, { immediate: true });

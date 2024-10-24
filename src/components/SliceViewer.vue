@@ -24,6 +24,7 @@ import { LayoutViewProps } from '../types';
 import { useResetViewsEvents } from './tools/ResetViews.vue';
 import { useViewAnimationListener } from '../composables/useViewAnimationListener';
 import { useToolSelectionStore } from '../store/tools/toolSelection';
+import { doesToolFrameMatchViewAxis } from '../composables/annotationTool';
 
 interface Props extends LayoutViewProps {
   viewDirection: LPSAxisDir;
@@ -53,7 +54,8 @@ const windowingManipulatorProps = computed(() =>
   currentTool.value === Tools.WindowLevel ? { button: 1 } : { button: -1 }
 );
 
-const { currentImageID, isImageLoading } = useCurrentImage();
+const { currentImageID, currentImageMetadata, isImageLoading } =
+  useCurrentImage();
 const { slice: currentSlice, range: sliceRange } = useSliceConfig(
   viewId,
   currentImageID
@@ -75,7 +77,11 @@ const selectionPoints = computed(() => {
       const store = useAnnotationToolStore(sel.type);
       return { store, tool: store.toolByID[sel.id] };
     })
-    .filter(({ tool }) => tool.slice === currentSlice.value)
+    .filter(
+      ({ tool }) =>
+        tool.slice === currentSlice.value &&
+        doesToolFrameMatchViewAxis(viewAxis, tool, currentImageMetadata.value)
+    )
     .flatMap(({ store, tool }) => store.getPoints(tool.id));
 });
 console.log(selectionPoints);

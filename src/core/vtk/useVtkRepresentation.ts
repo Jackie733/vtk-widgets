@@ -3,7 +3,11 @@ import { Maybe } from '@/src/types';
 import { vtkObject } from '@kitware/vtk.js/interfaces';
 import vtkAbstractMapper from '@kitware/vtk.js/Rendering/Core/AbstractMapper';
 import { onVTKEvent } from '@/src/composables/onVTKEvent';
-import { View, VtkObjectConstructor, vtkPropWithMapperProperty } from './types';
+import type {
+  View,
+  VtkObjectConstructor,
+  vtkPropWithMapperProperty,
+} from './types';
 
 export interface UseVtkRepresentationParameters<Actor, Mapper> {
   view: View;

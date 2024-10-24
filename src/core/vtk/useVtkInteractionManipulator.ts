@@ -1,5 +1,5 @@
-import vtkInteractorStyleManipulator from '@kitware/vtk.js/Interaction/Style/InteractorStyleManipulator';
 import { watch, MaybeRef, computed, ref, toRef, unref, watchEffect } from 'vue';
+import vtkInteractorStyleManipulator from '@kitware/vtk.js/Interaction/Style/InteractorStyleManipulator';
 import { FirstParam } from '@/src/types';
 import { stableDeepRef } from '@/src/composables/stableDeepRef';
 import { VtkObjectConstructor } from './types';

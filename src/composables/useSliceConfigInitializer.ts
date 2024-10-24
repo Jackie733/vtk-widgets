@@ -1,5 +1,5 @@
 import { MaybeRef, computed, toRef, unref } from 'vue';
-import { vtkRange } from '@kitware/vtk.js/interfaces';
+import type { vtkRange } from '@kitware/vtk.js/interfaces';
 import { watchImmediate } from '@vueuse/core';
 import { Maybe } from '../types';
 import { LPSAxisDir } from '../types/lps';

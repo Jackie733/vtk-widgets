@@ -95,6 +95,7 @@ watchImmediate([disableCameraAutoReset, viewID, imageID], ([noAutoReset]) => {
 // persistent camera config
 usePersistCameraConfig(viewID, imageID, view.renderer.getActiveCamera());
 
+// exposed API
 const api: VtkViewApi = markRaw({
   ...view,
   interactorStyle,

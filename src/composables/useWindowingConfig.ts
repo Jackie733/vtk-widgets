@@ -1,5 +1,5 @@
 import { computed, MaybeRef, unref } from 'vue';
-import { Vector2 } from '@kitware/vtk.js/types';
+import type { Vector2 } from '@kitware/vtk.js/types';
 import { Maybe } from '../types';
 import useWindowingStore from '../store/view-configs/windowing';
 
