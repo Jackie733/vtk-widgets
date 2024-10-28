@@ -4,6 +4,7 @@ import { Manifest, StateFile } from '@/src/io/state-file/schema';
 import { AnnotationToolType, IToolStore, Tools } from './types';
 import { AnnotationToolStore } from './useAnnotationTool';
 import { useCrosshairsToolStore } from './crosshairs';
+import { useRulerStore } from './rulers';
 
 interface State {
   currentTool: Tools;
@@ -15,7 +16,7 @@ export const AnnotationToolStoreMap: Record<
 > = {
   // [AnnotationToolType.Polygon]: null,
   // [AnnotationToolType.Rectangle]: null,
-  // [AnnotationToolType.Ruler]: null,
+  [AnnotationToolType.Ruler]: useRulerStore,
 } as const;
 
 export const ToolStoreMap: Record<Tools, Maybe<() => IToolStore>> = {

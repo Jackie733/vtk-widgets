@@ -1,9 +1,10 @@
 import type { Manifest, StateFile } from '@/src/io/state-file/schema';
 import { Store } from 'pinia';
 
-export enum AnnotationToolType {}
+export enum AnnotationToolType {
+  Ruler = 'Ruler',
+}
 // Rectangle = 'Rectangle',
-// Ruler = 'Ruler',
 // Polygon = 'Polygon',
 
 export enum Tools {
@@ -15,7 +16,7 @@ export enum Tools {
   // Paint = 'Paint',
   // Select = 'Select',
   // Rectangle = 'Rectangle',
-  // Ruler = 'Ruler',
+  Ruler = 'Ruler',
   // Polygon = 'Polygon',
 }
 

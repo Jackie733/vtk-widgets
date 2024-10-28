@@ -1,6 +1,10 @@
 export const EPSILON = 10e-6;
 export const NOOP = () => {};
 
+export const ANNOTATION_TOOL_HANDLE_RADIUS = 6; // CSS pixels
+export const PICKABLE_ANNOTATION_TOOL_HANDLE_RADIUS =
+  ANNOTATION_TOOL_HANDLE_RADIUS * 2;
+
 export const WLAutoRanges = {
   FullRange: 0,
   LowContrast: 1.0,
