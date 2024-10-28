@@ -1,11 +1,15 @@
+import { z } from 'zod';
 import { WLAutoRanges } from '@/src/constants';
 import { LayoutDirection } from '@/src/types/layout';
 import type { LPSAxis } from '@/src/types/lps';
 import type { FrameOfReference } from '@/src/utils/frameOfReference';
 import type { Vector3 } from '@kitware/vtk.js/types';
 import JSZip from 'jszip';
-import { z } from 'zod';
 import { Tools as ToolsEnum } from '@/src/store/tools/types';
+import { AnnotationTool, ToolID } from '@/src/types/annotation-tool';
+import type { Ruler } from '@/src/types/ruler';
+import { Optional } from '@/src/types';
+import type { Rectangle } from '@/src/types/rectangle';
 import type {
   CameraConfig,
   SliceConfig,
@@ -134,6 +138,37 @@ const FrameOfReference = z.object({
   planeNormal: Vector3,
 }) satisfies z.ZodType<FrameOfReference>;
 
+const annotationTool = z.object({
+  imageID: z.string(),
+  frameOfReference: FrameOfReference,
+  slice: z.number(),
+  id: z.string() as unknown as z.ZodType<ToolID>,
+  name: z.string(),
+  color: z.string(),
+  strokeWidth: z.number().optional(),
+  label: z.string().optional(),
+  labelName: z.string().optional(),
+}) satisfies z.ZodType<AnnotationTool>;
+
+const makeToolEntry = <T extends z.ZodRawShape>(tool: z.ZodObject<T>) =>
+  z.object({
+    tools: z.array(tool),
+    labels: z.record(tool.partial()),
+  });
+
+const Ruler = annotationTool.extend({
+  firstPoint: Vector3,
+  secondPoint: Vector3,
+}) satisfies z.ZodType<Ruler>;
+
+const Rulers = makeToolEntry(Ruler);
+
+const Rectangle = Ruler.extend({
+  fillColor: z.string().optional(),
+}) satisfies z.ZodType<Optional<Rectangle, 'fillColor'>>;
+
+const Rectangles = makeToolEntry(Rectangle);
+
 const Crosshairs = z.object({
   position: Vector3,
 });
@@ -142,6 +177,8 @@ export type Crosshairs = z.infer<typeof Crosshairs>;
 const ToolsEnumNative = z.nativeEnum(ToolsEnum);
 
 const Tools = z.object({
+  rulers: Rulers.optional(),
+  rectangles: Rectangles.optional(),
   crosshairs: Crosshairs,
   current: ToolsEnumNative,
 });

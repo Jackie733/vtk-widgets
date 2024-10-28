@@ -186,3 +186,9 @@ export const TOOL_COLORS = [
 ];
 
 export const STROKE_WIDTH_ANNOTATION_TOOL_DEFAULT = 1;
+
+export const RECTANGLE_LABEL_DEFAULTS = {
+  artifact: { color: '#888888' },
+  innocuous: { color: '#00ff00' },
+  lesion: { color: 'red' },
+};
