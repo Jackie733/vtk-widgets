@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { storeToRefs } from 'pinia';
 import LayoutGrid from './components/LayoutGrid.vue';
 import HeaderModule from './components/HeaderModule.vue';
-import { DefaultLayoutName, Layouts } from './config';
 import { useDICOMStore } from './store/dicom';
 import { useImageStore } from './store/images';
+import { useViewStore } from './store/views';
 
-const layout = Layouts[DefaultLayoutName];
+const { layout } = storeToRefs(useViewStore());
 
 const imageStore = useImageStore();
 const dicomStore = useDICOMStore();
@@ -20,9 +21,9 @@ const hasData = computed(() => {
 </script>
 
 <template>
-  <div class="bg-zinc-900 w-screen h-screen">
+  <div class="bg-zinc-900 w-screen h-screen flex flex-col">
     <HeaderModule :has-data="hasData" />
-    <div class="h-[520px] flex flex-col flex-grow">
+    <div class="flex flex-col flex-1">
       <LayoutGrid v-show="hasData" :layout="layout" />
     </div>
   </div>

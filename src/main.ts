@@ -13,6 +13,7 @@ import { initItkWorker } from './io/itk/worker';
 import { registerAllReaders } from './io/readers';
 import { FILE_READERS } from './io';
 import 'element-plus/dist/index.css';
+import 'element-plus/theme-chalk/dark/css-vars.css';
 import './global.css';
 import './reset.css';
 

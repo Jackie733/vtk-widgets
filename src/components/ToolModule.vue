@@ -19,7 +19,7 @@ const currentTool = computed(() => toolStore.currentTool);
     <item-group
       mandatory
       :model-value="currentTool"
-      @update:model-value="toolStore.setCurrentTool"
+      @update:model-value="toolStore.setCurrentTool($event)"
     >
       <groupable-item
         v-slot:default="{ active, toggle }"

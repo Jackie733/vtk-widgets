@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-auto" :class="flexFlow">
-    <div v-for="(item, i) in items" :key="i" class="flex flex-auto">
+  <div class="flex flex-1 min-w-0" :class="flexFlow">
+    <div v-for="(item, i) in items" :key="i" class="flex flex-1 min-w-0">
       <layout-grid v-if="item.type === 'layout'" :layout="item as Layout" />
       <div v-else class="flex flex-1 border border-solid border-slate-400">
         <component
@@ -16,7 +16,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, toRefs, watchEffect } from 'vue';
+import { computed, defineComponent, PropType, toRefs } from 'vue';
 import { storeToRefs } from 'pinia';
 import { Layout, LayoutDirection } from '../types/layout';
 import { ViewTypeToComponent } from '../core/viewTypes';
@@ -37,12 +37,8 @@ export default defineComponent({
 
     const flexFlow = computed(() => {
       return layout.value.direction === LayoutDirection.H
-        ? 'flex-column'
+        ? 'flex-col'
         : 'flex-row';
-    });
-
-    watchEffect(() => {
-      console.log(flexFlow.value);
     });
 
     const items = computed(() => {
