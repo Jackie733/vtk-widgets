@@ -13,7 +13,7 @@
 </template>
 
 <script>
-import { Sort, Aim, Rank, Platform } from '@element-plus/icons-vue';
+import { Sort, Aim, Rank, Platform, Link } from '@element-plus/icons-vue';
 import { Tools } from '../store/tools/types';
 
 const IconMap = {
@@ -21,6 +21,7 @@ const IconMap = {
   [Tools.WindowLevel]: Sort,
   [Tools.Pan]: Rank,
   [Tools.Crosshairs]: Aim,
+  [Tools.Ruler]: Link,
 };
 
 export default {

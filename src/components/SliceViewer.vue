@@ -13,6 +13,7 @@ import VtkMouseInteractionManipulator from './vtk/VtkMouseInteractionManipulator
 import SliceViewerOverlay from './SliceViewerOverlay.vue';
 import CrosshairsTool from './tools/crosshairs/CrosshairsTool.vue';
 import SliceSlider from './SliceSlider.vue';
+import RulerTool from './tools/ruler/RulerTool.vue';
 import SelectTool from './tools/SelectTool.vue';
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
@@ -162,6 +163,11 @@ console.log(selectionPoints);
           >
           </vtk-base-slice-representation>
           <crosshairs-tool
+            :view-id="viewId"
+            :image-id="currentImageID"
+            :view-direction="viewDirection"
+          />
+          <ruler-tool
             :view-id="viewId"
             :image-id="currentImageID"
             :view-direction="viewDirection"
