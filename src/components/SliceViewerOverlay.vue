@@ -35,6 +35,11 @@ const {
 
 <template>
   <view-overlay-grid class="overlay-no-events view-annotations">
+    <template v-slot:top-left>
+      <div class="annotation-cell">
+        <span>{{ viewId }}</span>
+      </div>
+    </template>
     <template v-slot:top-center>
       <div class="annotation-cell">
         <span>{{ topLabel }}</span>

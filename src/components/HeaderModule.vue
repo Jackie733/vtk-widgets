@@ -62,6 +62,7 @@ const handleCommand = (command: Layout) => {
     <div class="flex items-center justify-between h-full px-4">
       <div class="flex items-center gap-1">
         <el-button
+          v-if="!hasData"
           :icon="Upload"
           :loading="isLoading"
           size="small"
