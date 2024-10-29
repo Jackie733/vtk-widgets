@@ -2,6 +2,7 @@
 import { computed, ref, toRefs } from 'vue';
 import { storeToRefs } from 'pinia';
 import { whenever } from '@vueuse/core';
+import { Camera } from '@element-plus/icons-vue';
 import vtkMouseCameraTrackballPanManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballPanManipulator';
 import vtkMouseCameraTrackballZoomToMouseManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballZoomToMouseManipulator';
 import { LPSAxisDir } from '../types/lps';
@@ -97,6 +98,11 @@ console.log(selectionPoints);
     @focusout="hover = false"
   >
     <div class="vtk-gutter">
+      <el-tooltip content="Reset Camera">
+        <el-icon class="cursor-pointer" @click="resetCamera">
+          <Camera />
+        </el-icon>
+      </el-tooltip>
       <SliceSlider
         v-model="currentSlice"
         class="slice-slider"
