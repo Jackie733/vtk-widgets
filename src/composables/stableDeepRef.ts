@@ -1,8 +1,12 @@
-import { computed, ref, Ref } from 'vue';
+import { Ref, computed, ref } from 'vue';
+import { watchCompare } from '@/src/utils/watchCompare';
 import deepEqual from 'fast-deep-equal';
-import { watchCompare } from '../utils/watchCompare';
 
-// Ensures that a Ref holds a stable reference by deep comparison.
+/**
+ * Ensures that a Ref holds a stable reference by deep comparison.
+ * @param sourceRef
+ * @returns
+ */
 export function stableDeepRef<T>(sourceRef: Ref<T>) {
   const stableRef = ref<T>(sourceRef.value) as Ref<T>;
   watchCompare(

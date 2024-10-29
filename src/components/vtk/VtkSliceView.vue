@@ -36,7 +36,7 @@ const vtkContainerRef = ref<HTMLElement>();
 const { disableCameraAutoReset } = storeToRefs(useViewCameraStore());
 
 const { metadata: imageMetadata } = useImage(imageID);
-//
+
 // use a detached scope so that actors can be removed from
 // the renderer before the renderer is deleted.
 const scope = effectScope(true);
@@ -48,11 +48,14 @@ onUnmounted(() => {
 view.renderer.setBackground(0, 0, 0);
 view.renderer.getActiveCamera().setParallelProjection(true);
 
+// setup interactor
 const { interactorStyle } = useVtkInteractorStyle(
   vtkInteractorStyleManipulator,
   view
 );
 
+// bind slice and window configs
+// resizeToFit camera controls
 const { autoFit, withoutAutoFitEffect } = useAutoFitState(
   view.renderer.getActiveCamera()
 );
@@ -83,8 +86,8 @@ function resetCamera() {
       viewDirection.value,
       viewUp.value
     );
+    autoFitImage();
   });
-  autoFitImage();
 }
 
 watchImmediate([disableCameraAutoReset, viewID, imageID], ([noAutoReset]) => {

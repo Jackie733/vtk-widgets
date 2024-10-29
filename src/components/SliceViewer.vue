@@ -163,7 +163,7 @@ console.log(selectionPoints);
             :image-id="currentImageID"
           ></slice-viewer-overlay>
           <vtk-base-slice-representation
-            :view-id="viewId"
+            :view-id="id"
             :image-id="currentImageID"
             :axis="viewAxis"
           >
@@ -179,15 +179,18 @@ console.log(selectionPoints);
             :view-direction="viewDirection"
           />
           <select-tool />
+          <slot></slot>
         </vtk-slice-view>
       </div>
-      <div
-        v-if="isImageLoading"
-        v-loading="true"
-        element-loading-text="Loading..."
-        element-loading-background="rgba(122, 122, 122, 0.5)"
-        class="overlay-no-events loading"
-      ></div>
+      <transition name="loading">
+        <div
+          v-if="isImageLoading"
+          v-loading="true"
+          element-loading-text="Loading..."
+          element-loading-background="rgba(122, 122, 122, 0.5)"
+          class="overlay-no-events loading"
+        ></div>
+      </transition>
     </div>
   </div>
 </template>

@@ -1,11 +1,11 @@
-import vtkCamera from "@kitware/vtk.js/Rendering/Core/Camera";
-import { Vector2, Vector3 } from "@kitware/vtk.js/types";
-import { vec3 } from "gl-matrix";
-import { View } from "../core/vtk/types";
-import { ImageMetadata } from "../types/image";
-import { LPSAxisDir } from "../types/lps";
-import vtkBoundingBox from "@kitware/vtk.js/Common/DataModel/BoundingBox";
-import { getLPSAxisFromDir, getLPSDirections } from "./lps";
+import vtkCamera from '@kitware/vtk.js/Rendering/Core/Camera';
+import { Vector2, Vector3 } from '@kitware/vtk.js/types';
+import { vec3 } from 'gl-matrix';
+import vtkBoundingBox from '@kitware/vtk.js/Common/DataModel/BoundingBox';
+import { View } from '../core/vtk/types';
+import { ImageMetadata } from '../types/image';
+import { LPSAxisDir } from '../types/lps';
+import { getLPSAxisFromDir, getLPSDirections } from './lps';
 
 /**
  * Given an eye frame, return the dimension indices corresponding to the horizontal and vertical dimensions.
@@ -27,7 +27,7 @@ function computeParallelScale(
   lookAxis: 0 | 1 | 2,
   viewUpAxis: 0 | 1 | 2,
   dimensions: Vector3 | vec3,
-  viewSize: Vector2,
+  viewSize: Vector2
 ) {
   const [widthIndex, heightIndex] = eyeFrameDimIndices(lookAxis, viewUpAxis);
   const width = dimensions[widthIndex];
@@ -49,7 +49,7 @@ export function resizeToFit(
   view: View,
   lookAxis: 0 | 1 | 2,
   upAxis: 0 | 1 | 2,
-  dimensions: Vector3 | vec3,
+  dimensions: Vector3 | vec3
 ) {
   const camera = view.renderer.getActiveCamera();
   camera.setParallelScale(
@@ -57,8 +57,8 @@ export function resizeToFit(
       lookAxis,
       upAxis,
       dimensions,
-      view.renderWindowView.getSize(),
-    ),
+      view.renderWindowView.getSize()
+    )
   );
 }
 
@@ -66,7 +66,7 @@ export function positionCamera(
   camera: vtkCamera,
   directionOfProjection: Vector3,
   viewUp: Vector3,
-  focalPoint: Vector3,
+  focalPoint: Vector3
 ) {
   const position = vec3.clone(focalPoint) as Vector3;
   vec3.sub(position, position, directionOfProjection);
@@ -80,7 +80,7 @@ export function resetCameraToImage(
   view: View,
   metadata: ImageMetadata,
   viewDirection: LPSAxisDir,
-  viewUp: LPSAxisDir,
+  viewUp: LPSAxisDir
 ) {
   const { worldBounds, orientation } = metadata;
   const lpsDirections = getLPSDirections(orientation);
@@ -100,7 +100,7 @@ export function resizeToFitImage(
   view: View,
   metadata: ImageMetadata,
   viewDirection: LPSAxisDir,
-  viewUp: LPSAxisDir,
+  viewUp: LPSAxisDir
 ) {
   const { lpsOrientation, dimensions, spacing } = metadata;
   const viewDirAxis = getLPSAxisFromDir(viewDirection);

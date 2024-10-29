@@ -61,6 +61,7 @@ export function useVtkView(container: MaybeRef<Maybe<HTMLElement>>): View {
   const renderWindow = vtkRenderWindow.newInstance();
   renderWindow.addRenderer(renderer);
 
+  // the render window view
   const renderWindowView = useWebGLRenderWindow(container);
   renderWindow.addView(renderWindowView);
 
@@ -68,6 +69,7 @@ export function useVtkView(container: MaybeRef<Maybe<HTMLElement>>): View {
     renderWindow.removeView(renderWindowView);
   });
 
+  // interactor
   const interactor = vtkRenderWindowInteractor.newInstance();
   renderWindow.setInteractor(interactor);
   interactor.setView(renderWindowView);
@@ -77,9 +79,9 @@ export function useVtkView(container: MaybeRef<Maybe<HTMLElement>>): View {
     if (!el) return;
 
     interactor.initialize();
-    interactor.bindEvents(el);
+    interactor.setContainer(el);
     onCleanup(() => {
-      if (interactor.getContainer()) interactor.unbindEvents();
+      if (interactor.getContainer()) interactor.setContainer(null);
     });
   });
 
