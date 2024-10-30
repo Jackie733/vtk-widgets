@@ -128,3 +128,20 @@ export function roundIfCloseToInteger(value: number, eps = EPSILON) {
   }
   return value;
 }
+
+/**
+ * Normalizes a list of objects to { order, byKey }
+ * @param objects
+ * @param key
+ * @returns
+ */
+export function normalizeForStore<T, K extends keyof T>(objects: T[], key: K) {
+  type KeyType = T[K];
+  const order: KeyType[] = objects.map((obj) => obj[key]);
+  const byKey = objects.reduce<Record<K, T>>(
+    (acc, obj) => ({ ...acc, [obj[key] as string | number | symbol]: obj }),
+    {} as Record<string | number | symbol, T>
+  );
+
+  return { order, byKey };
+}

@@ -12,6 +12,8 @@ import App from './App.vue';
 import { initItkWorker } from './io/itk/worker';
 import { registerAllReaders } from './io/readers';
 import { FILE_READERS } from './io';
+import { storeRegistry } from './plugins/storeRegistry';
+import { CorePiniaProviderPlugin } from '@/src/core/provider';
 import 'element-plus/dist/index.css';
 import 'element-plus/theme-chalk/dark/css-vars.css';
 import './global.css';
@@ -29,6 +31,8 @@ setPipelineWorkerUrl(itkConfig.pipelineWorkerUrl);
 setPipelinesBaseUrl(itkConfig.imageIOUrl);
 
 const pinia = createPinia();
+pinia.use(CorePiniaProviderPlugin({}));
+pinia.use(storeRegistry);
 
 const app = createApp(App);
 
