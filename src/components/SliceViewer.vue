@@ -8,6 +8,7 @@ import vtkMouseCameraTrackballZoomToMouseManipulator from '@kitware/vtk.js/Inter
 import { LPSAxisDir } from '../types/lps';
 import VtkSliceView from './vtk/VtkSliceView.vue';
 import VtkBaseSliceRepresentation from './vtk/VtkBaseSliceRepresentation.vue';
+import VtkSegmentationSliceRepresentation from './vtk/VtkSegmentationSliceRepresentation.vue';
 import VtkSliceViewWindowManipulator from './vtk/VtkSliceViewWindowManipulator.vue';
 import VtkSliceViewSlicingManipulator from './vtk/VtkSliceViewSlicingManipulator.vue';
 import VtkMouseInteractionManipulator from './vtk/VtkMouseInteractionManipulator.vue';
@@ -15,6 +16,7 @@ import SliceViewerOverlay from './SliceViewerOverlay.vue';
 import CrosshairsTool from './tools/crosshairs/CrosshairsTool.vue';
 import SliceSlider from './SliceSlider.vue';
 import RulerTool from './tools/ruler/RulerTool.vue';
+import PaintTool from './tools/paint/PaintTool.vue';
 import SelectTool from './tools/SelectTool.vue';
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
@@ -27,6 +29,7 @@ import { useResetViewsEvents } from './tools/ResetViews.vue';
 import { useViewAnimationListener } from '../composables/useViewAnimationListener';
 import { useToolSelectionStore } from '../store/tools/toolSelection';
 import { doesToolFrameMatchViewAxis } from '../composables/annotationTool';
+import { useSegmentGroupStore } from '../store/segmentGroups';
 
 interface Props extends LayoutViewProps {
   viewDirection: LPSAxisDir;
@@ -69,6 +72,13 @@ whenever(
     resetCamera();
   }
 );
+
+// segmentations
+const segmentations = computed(() => {
+  if (!currentImageID.value) return [];
+  const store = useSegmentGroupStore();
+  return store.orderByParent[currentImageID.value];
+});
 
 // --- selection points --- //
 
@@ -168,7 +178,19 @@ console.log(selectionPoints);
             :axis="viewAxis"
           >
           </vtk-base-slice-representation>
+          <vtk-segmentation-slice-representation
+            v-for="segId in segmentations"
+            :key="`seg-${segId}`"
+            :view-id="id"
+            :segmentation-id="segId"
+            :axis="viewAxis"
+          ></vtk-segmentation-slice-representation>
           <crosshairs-tool
+            :view-id="viewId"
+            :image-id="currentImageID"
+            :view-direction="viewDirection"
+          />
+          <paint-tool
             :view-id="viewId"
             :image-id="currentImageID"
             :view-direction="viewDirection"

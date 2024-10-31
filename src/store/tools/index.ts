@@ -2,9 +2,10 @@ import { Maybe } from '@/src/types';
 import { defineStore } from 'pinia';
 import { Manifest, StateFile } from '@/src/io/state-file/schema';
 import { AnnotationToolType, IToolStore, Tools } from './types';
-import { AnnotationToolStore } from './useAnnotationTool';
+import type { AnnotationToolStore } from './useAnnotationTool';
 import { useCrosshairsToolStore } from './crosshairs';
 import { useRulerStore } from './rulers';
+import { usePaintToolStore } from './paint';
 
 interface State {
   currentTool: Tools;
@@ -23,6 +24,7 @@ export const ToolStoreMap: Record<Tools, Maybe<() => IToolStore>> = {
   [Tools.Pan]: null,
   [Tools.WindowLevel]: null,
   [Tools.Crosshairs]: useCrosshairsToolStore,
+  [Tools.Paint]: usePaintToolStore,
   ...AnnotationToolStoreMap,
 } as const;
 
@@ -80,10 +82,16 @@ export const useToolStore = defineStore('tool', {
       dataIDMap: Record<string, string>
     ) {
       const { tools } = manifest;
-      console.log(segmentGroupIDMap, dataIDMap);
 
-      // usePaintToolStore().deserialize(manifest, segmentGroupIDMap);
-      // TODO:
+      usePaintToolStore().deserialize(manifest, segmentGroupIDMap);
+
+      Object.values(ToolStoreMap)
+        .filter((useStore) => useStore !== usePaintToolStore)
+        .map((useStore) => useStore?.())
+        .filter((store): store is IToolStore => !!store)
+        .forEach((store) => {
+          store.deserialize?.(manifest, dataIDMap);
+        });
 
       this.currentTool = tools.current;
     },

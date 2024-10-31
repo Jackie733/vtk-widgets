@@ -63,6 +63,15 @@ const currentTool = computed(() => toolStore.currentTool);
           @click="toggle"
         />
       </groupable-item>
+      <groupable-item v-slot:default="{ active, toggle }" :value="Tools.Paint">
+        <control-button
+          :icon="Tools.Paint"
+          name="Paint"
+          :active="active"
+          :disabled="noCurrentImage"
+          @click="toggle"
+        />
+      </groupable-item>
     </item-group>
   </div>
 </template>

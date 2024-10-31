@@ -221,6 +221,19 @@ export const DEFAULT_SEGMENT_MASKS: SegmentMask[] = [
   },
 ];
 
+export const DEFAULT_PRESET_BY_MODALITY: Record<string, string> = {
+  CT: 'CT-AAA',
+  MR: 'CT-Coronary-Arteries-2',
+  US: 'US-Fetal',
+};
+export const DEFAULT_PRESET = 'CT-AAA';
+
+export const LAYER_PRESET_BY_MODALITY: Record<string, string> = {
+  ...DEFAULT_PRESET_BY_MODALITY,
+  PT: '2hot-opaque',
+};
+export const LAYER_PRESET_DEFAULT = 'Blue to Red Rainbow';
+
 // from https://github.com/InsightSoftwareConsortium/itk-viewer-color-maps/blob/main/src/CategoricalColors.json
 export const CATEGORICAL_COLORS = [
   [214, 0, 0],
