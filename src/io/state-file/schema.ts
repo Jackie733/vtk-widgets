@@ -1,4 +1,9 @@
 import { z } from 'zod';
+import vtkPiecewiseFunctionProxy from '@kitware/vtk.js/Proxy/Core/PiecewiseFunctionProxy';
+import type {
+  PiecewiseGaussian,
+  PiecewiseNode,
+} from '@kitware/vtk.js/Proxy/Core/PiecewiseFunctionProxy';
 import { WLAutoRanges } from '@/src/constants';
 import { LayoutDirection } from '@/src/types/layout';
 import type { LPSAxis } from '@/src/types/lps';
@@ -14,7 +19,18 @@ import type {
   CameraConfig,
   SliceConfig,
   WindowLevelConfig,
+  LayersConfig,
 } from '../../store/view-configs/types';
+import type {
+  ColorBy,
+  ColorTransferFunction,
+  OpacityFunction,
+  OpacityGaussians,
+  OpacityPoints,
+  OpacityNodes,
+  ColoringConfig,
+  BlendConfig,
+} from '../../types/views';
 
 export enum DatasetType {
   DICOM = 'dicom',
@@ -88,9 +104,79 @@ const CameraConfig = z.object({
   syncState: z.boolean().optional(),
 }) satisfies z.ZodType<CameraConfig>;
 
+const ColorBy = z.object({
+  arrayName: z.string(),
+  location: z.string(),
+}) satisfies z.ZodType<ColorBy>;
+
+const PiecewiseGaussian = z.object({
+  position: z.number(),
+  height: z.number(),
+  width: z.number(),
+  xBias: z.number(),
+  yBias: z.number(),
+}) satisfies z.ZodType<PiecewiseGaussian>;
+
+const PiecewiseNode = z.object({
+  x: z.number(),
+  y: z.number(),
+  midpoint: z.number(),
+  sharpness: z.number(),
+}) as z.ZodType<PiecewiseNode>;
+
+const OpacityGaussians = z.object({
+  mode: z.literal(vtkPiecewiseFunctionProxy.Mode.Gaussians),
+  gaussians: PiecewiseGaussian.array(),
+  mappingRange: z.tuple([z.number(), z.number()]),
+}) satisfies z.ZodType<OpacityGaussians>;
+
+const OpacityPoints = z.object({
+  mode: z.literal(vtkPiecewiseFunctionProxy.Mode.Points),
+  preset: z.string(),
+  shift: z.number(),
+  shiftAlpha: z.number(),
+  mappingRange: z.tuple([z.number(), z.number()]),
+}) satisfies z.ZodType<OpacityPoints>;
+
+const OpacityNodes = z.object({
+  mode: z.literal(vtkPiecewiseFunctionProxy.Mode.Nodes),
+  nodes: PiecewiseNode.array(),
+  mappingRange: z.tuple([z.number(), z.number()]),
+}) satisfies z.ZodType<OpacityNodes>;
+
+const OpacityFunction = z.union([
+  OpacityGaussians,
+  OpacityPoints,
+  OpacityNodes,
+]);
+
+const ColorTransferFunction = z.object({
+  preset: z.string(),
+  mappingRange: z.tuple([z.number(), z.number()]),
+}) satisfies z.ZodType<ColorTransferFunction>;
+
+const ColoringConfig = z.object({
+  colorBy: ColorBy,
+  transferFunction: ColorTransferFunction,
+  opacityFunction: OpacityFunction,
+}) satisfies z.ZodType<ColoringConfig>;
+
+const BlendConfig = z.object({
+  opacity: z.number(),
+  visibility: z.boolean(),
+}) satisfies z.ZodType<BlendConfig>;
+
+const LayersConfig = z.object({
+  colorBy: ColorBy,
+  transferFunction: ColorTransferFunction,
+  opacityFunction: OpacityFunction,
+  blendConfig: BlendConfig,
+}) satisfies z.ZodType<LayersConfig>;
+
 const ViewConfig = z.object({
   window: WindowLevelConfig.optional(),
   slice: SliceConfig.optional(),
+  layers: LayersConfig.optional(),
   camera: CameraConfig.optional(),
 });
 export type ViewConfig = z.infer<typeof ViewConfig>;
@@ -177,12 +263,29 @@ export type Crosshairs = z.infer<typeof Crosshairs>;
 
 const ToolsEnumNative = z.nativeEnum(ToolsEnum);
 
+const Paint = z.object({
+  activeSegmentGroupID: z.string().nullable(),
+  activeSegment: z.number().nullish(),
+  brushSize: z.number(),
+  labelmapOpacity: z.number().optional(),
+});
+
 const Tools = z.object({
   rulers: Rulers.optional(),
   rectangles: Rectangles.optional(),
   crosshairs: Crosshairs,
+  paint: Paint,
   current: ToolsEnumNative,
 });
+
+export const ParentToLayers = z
+  .object({
+    selectionKey: z.string(),
+    sourceSelectionKeys: z.string().array(),
+  })
+  .array();
+
+export type ParentToLayers = z.infer<typeof ParentToLayers>;
 
 export const ManifestSchema = z.object({
   version: z.string(),
@@ -192,6 +295,7 @@ export const ManifestSchema = z.object({
   views: View.array(),
   primarySelection: z.string().optional(),
   layout: Layout,
+  parentToLayers: ParentToLayers,
 });
 export type Manifest = z.infer<typeof ManifestSchema>;
 

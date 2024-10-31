@@ -11,12 +11,12 @@ export enum Tools {
   Crosshairs = 'Crosshairs',
   WindowLevel = 'WindowLevel',
   Pan = 'Pan',
+  Paint = 'Paint',
+  Ruler = 'Ruler',
   // Zoom = 'Zoom',
   // Crop = 'Crop',
-  // Paint = 'Paint',
   // Select = 'Select',
   // Rectangle = 'Rectangle',
-  Ruler = 'Ruler',
   // Polygon = 'Polygon',
 }
 

@@ -13,6 +13,9 @@ export type AnnotationTool = {
   imageID: string;
   slice: number;
   frameOfReference: FrameOfReference;
+  /**
+   * Is this tool unfinished?
+   */
   placing?: boolean;
   label?: string;
   labelName?: string;

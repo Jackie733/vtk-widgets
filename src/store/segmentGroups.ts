@@ -1,11 +1,13 @@
 import { RGBAColor } from '@kitware/vtk.js/types';
-import { SegmentMask } from '../types/segment';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
-import vtkLabelMap from '../vtk/LabelMap';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import vtkImageExtractComponents from '@/src/utils/imageExtractComponentsFilter';
 import { defineStore } from 'pinia';
 import { computed, reactive, ref, toRaw, watch } from 'vue';
+import vtkBoundingBox from '@kitware/vtk.js/Common/DataModel/BoundingBox';
+import { join, normalize } from '@/src/utils/path';
+import { SegmentMask } from '../types/segment';
+import vtkLabelMap from '../vtk/LabelMap';
 import { useIdStore } from './id';
 import { onImageDeleted } from '../composables/onImageDeleted';
 import { useImageStore } from './images';
@@ -17,12 +19,10 @@ import {
   isRegularImage,
 } from '../utils/dataSelection';
 import { useDICOMStore } from './dicom';
-import vtkBoundingBox from '@kitware/vtk.js/Common/DataModel/BoundingBox';
 import { ensureSameSpace } from '../io/resample/resample';
 import { Manifest, StateFile } from '../io/state-file/schema';
 import { readImage, writeImage } from '../io/readWriteImage';
 import { FileEntry } from '../io/types';
-import { join, normalize } from '@/src/utils/path';
 
 const LabelmapArrayType = Uint8Array;
 export type LabelmapArrayType = Uint8Array;
