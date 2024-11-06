@@ -15,6 +15,7 @@ import { AnnotationTool, ToolID } from '@/src/types/annotation-tool';
 import type { Ruler } from '@/src/types/ruler';
 import { Optional } from '@/src/types';
 import type { Rectangle } from '@/src/types/rectangle';
+import type { Polygon } from '@/src/types/polygon';
 import type {
   CameraConfig,
   SliceConfig,
@@ -256,6 +257,13 @@ const Rectangle = Ruler.extend({
 
 const Rectangles = makeToolEntry(Rectangle);
 
+const Polygon = annotationTool.extend({
+  id: z.string() as unknown as z.ZodType<ToolID>,
+  points: z.array(Vector3),
+}) satisfies z.ZodType<Omit<Polygon, 'movePoint'>>;
+
+const Polygons = makeToolEntry(Polygon);
+
 const Crosshairs = z.object({
   position: Vector3,
 });
@@ -273,6 +281,7 @@ const Paint = z.object({
 const Tools = z.object({
   rulers: Rulers.optional(),
   rectangles: Rectangles.optional(),
+  polygons: Polygons.optional(),
   crosshairs: Crosshairs,
   paint: Paint,
   current: ToolsEnumNative,

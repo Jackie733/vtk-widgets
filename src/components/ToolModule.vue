@@ -26,18 +26,18 @@ const currentTool = computed(() => toolStore.currentTool);
         :value="Tools.WindowLevel"
       >
         <control-button
-          :icon="Tools.WindowLevel"
+          icon="mdi-circle-half-full"
           name="Window & Level"
-          :active="active"
+          :buttonClass="['tool-btn', active ? 'tool-btn-selected' : '']"
           :disabled="noCurrentImage"
           @click="toggle"
         />
       </groupable-item>
       <groupable-item v-slot:default="{ active, toggle }" :value="Tools.Pan">
         <control-button
-          :icon="Tools.Pan"
+          icon="mdi-cursor-move"
           name="Pan"
-          :active="active"
+          :buttonClass="['tool-btn', active ? 'tool-btn-selected' : '']"
           :disabled="noCurrentImage"
           @click="toggle"
         />
@@ -47,27 +47,39 @@ const currentTool = computed(() => toolStore.currentTool);
         :value="Tools.Crosshairs"
       >
         <control-button
-          :icon="Tools.Crosshairs"
+          icon="mdi-crosshairs"
           name="Crosshairs"
-          :active="active"
+          :buttonClass="['tool-btn', active ? 'tool-btn-selected' : '']"
           :disabled="noCurrentImage"
           @click="toggle"
         />
       </groupable-item>
       <groupable-item v-slot:default="{ active, toggle }" :value="Tools.Ruler">
         <control-button
-          :icon="Tools.Ruler"
+          icon="mdi-ruler"
           name="Ruler"
-          :active="active"
+          :buttonClass="['tool-btn', active ? 'tool-btn-selected' : '']"
           :disabled="noCurrentImage"
           @click="toggle"
         />
       </groupable-item>
       <groupable-item v-slot:default="{ active, toggle }" :value="Tools.Paint">
         <control-button
-          :icon="Tools.Paint"
+          icon="mdi-brush"
           name="Paint"
-          :active="active"
+          :buttonClass="['tool-btn', active ? 'tool-btn-selected' : '']"
+          :disabled="noCurrentImage"
+          @click="toggle"
+        />
+      </groupable-item>
+      <groupable-item
+        v-slot:default="{ active, toggle }"
+        :value="Tools.Polygon"
+      >
+        <control-button
+          icon="mdi-pentagon-outline"
+          name="Polygon"
+          :buttonClass="['tool-btn', active ? 'tool-btn-selected' : '']"
           :disabled="noCurrentImage"
           @click="toggle"
         />
@@ -75,3 +87,9 @@ const currentTool = computed(() => toolStore.currentTool);
     </item-group>
   </div>
 </template>
+
+<style>
+.tool-btn-selected {
+  background-color: rgb(var(--v-theme-selection-bg-color));
+}
+</style>

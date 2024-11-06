@@ -2,6 +2,8 @@ import path from 'path';
 import { createRequire } from 'module';
 import { defineConfig, normalizePath } from 'vite';
 import vue from '@vitejs/plugin-vue';
+import { createHtmlPlugin } from 'vite-plugin-html';
+import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
 function resolveNodeModulePath(moduleName: string) {
@@ -44,7 +46,14 @@ export default defineConfig({
     sourcemap: true,
   },
   plugins: [
-    vue(),
+    vue({ template: { transformAssetUrls } }),
+    vuetify({
+      autoImport: true,
+    }),
+    createHtmlPlugin({
+      minify: true,
+      template: 'index.html',
+    }),
     viteStaticCopy({
       targets: [
         {

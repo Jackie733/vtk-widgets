@@ -6,6 +6,7 @@ import type { AnnotationToolStore } from './useAnnotationTool';
 import { useCrosshairsToolStore } from './crosshairs';
 import { useRulerStore } from './rulers';
 import { usePaintToolStore } from './paint';
+import { usePolygonStore } from './polygons';
 
 interface State {
   currentTool: Tools;
@@ -15,7 +16,7 @@ export const AnnotationToolStoreMap: Record<
   AnnotationToolType,
   () => AnnotationToolStore
 > = {
-  // [AnnotationToolType.Polygon]: null,
+  [AnnotationToolType.Polygon]: usePolygonStore,
   // [AnnotationToolType.Rectangle]: null,
   [AnnotationToolType.Ruler]: useRulerStore,
 } as const;

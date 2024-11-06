@@ -2,7 +2,6 @@
 import { computed, ref, toRefs } from 'vue';
 import { storeToRefs } from 'pinia';
 import { whenever } from '@vueuse/core';
-import { Camera } from '@element-plus/icons-vue';
 import vtkMouseCameraTrackballPanManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballPanManipulator';
 import vtkMouseCameraTrackballZoomToMouseManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballZoomToMouseManipulator';
 import { LPSAxisDir } from '../types/lps';
@@ -17,6 +16,7 @@ import CrosshairsTool from './tools/crosshairs/CrosshairsTool.vue';
 import SliceSlider from './SliceSlider.vue';
 import RulerTool from './tools/ruler/RulerTool.vue';
 import PaintTool from './tools/paint/PaintTool.vue';
+import PolygonTool from './tools/polygon/PolygonTool.vue';
 import SelectTool from './tools/SelectTool.vue';
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
@@ -108,11 +108,15 @@ console.log(selectionPoints);
     @focusout="hover = false"
   >
     <div class="vtk-gutter">
-      <el-tooltip content="Reset Camera">
-        <el-icon class="cursor-pointer" @click="resetCamera">
-          <Camera />
-        </el-icon>
-      </el-tooltip>
+      <v-btn dark icon size="medium" variant="text" @click="resetCamera">
+        <v-icon size="medium" class="py-1"> mdi-camera-flip-outline </v-icon>
+        <v-tooltip
+          location="right"
+          activator="parent"
+          transition="slide-x-transition"
+          >Reset Camera</v-tooltip
+        >
+      </v-btn>
       <SliceSlider
         v-model="currentSlice"
         class="slice-slider"
@@ -195,6 +199,11 @@ console.log(selectionPoints);
             :image-id="currentImageID"
             :view-direction="viewDirection"
           />
+          <polygon-tool
+            :view-id="viewId"
+            :image-id="currentImageID"
+            :view-direction="viewDirection"
+          />
           <ruler-tool
             :view-id="viewId"
             :image-id="currentImageID"
@@ -205,13 +214,12 @@ console.log(selectionPoints);
         </vtk-slice-view>
       </div>
       <transition name="loading">
-        <div
-          v-if="isImageLoading"
-          v-loading="true"
-          element-loading-text="Loading..."
-          element-loading-background="rgba(122, 122, 122, 0.5)"
-          class="overlay-no-events loading"
-        ></div>
+        <div v-if="isImageLoading" class="overlay-no-events loading">
+          <div>Loading the image</div>
+          <div>
+            <v-progress-circular indeterminate color="blue" />
+          </div>
+        </div>
       </transition>
     </div>
   </div>

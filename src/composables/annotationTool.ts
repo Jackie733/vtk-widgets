@@ -11,6 +11,7 @@ import {
 } from 'vue';
 import vtkAbstractWidget from '@kitware/vtk.js/Widgets/Core/AbstractWidget';
 import { watchImmediate } from '@vueuse/core';
+import type { Vector2 } from '@kitware/vtk.js/types';
 import { AnnotationTool, ToolID } from '../types/annotation-tool';
 import { LPSAxis } from '../types/lps';
 import { ImageMetadata } from '../types/image';
@@ -25,6 +26,11 @@ import { View } from '../core/vtk/types';
 import { AnnotationToolStore } from '../store/tools/useAnnotationTool';
 import { useCurrentImage } from './useCurrentImage';
 import { Maybe } from '../types';
+import { usePopperState } from './usePopperState';
+import { useToolStore } from '../store/tools';
+import { Tools } from '../store/tools/types';
+
+const SHOW_OVERLAY_DELAY = 250; // milliseconds
 
 export const doesToolFrameMatchViewAxis = <Tool extends AnnotationTool>(
   viewAxis: MaybeRef<LPSAxis>,
@@ -109,6 +115,80 @@ export const useHoverEvent = (
       });
     }
   });
+};
+
+export type OverlayInfo =
+  | { visible: false }
+  | { visible: true; toolID: ToolID; displayXY: Vector2 };
+
+// Maintains list of tools' hover states.
+// If one tool hovered, overlayInfo.visible === true with toolID and displayXY
+export const useHover = (
+  tools: Ref<Array<AnnotationTool>>,
+  currentSlice: Ref<number>
+) => {
+  type Info = OverlayInfo;
+  const toolHoverState = ref({}) as Ref<Record<ToolID, Info>>;
+
+  const toolsOnCurrentSlice = computed(() =>
+    tools.value.filter((tool) => tool.slice === currentSlice.value)
+  );
+
+  watch(toolsOnCurrentSlice, () => {
+    toolHoverState.value = toolsOnCurrentSlice.value.reduce(
+      (toolsHovers, { id }) => {
+        const state = toolHoverState.value[id] ?? {
+          visible: false,
+        };
+        return Object.assign(toolsHovers, {
+          [id]: state,
+        });
+      },
+      {} as Record<ToolID, Info>
+    );
+  });
+
+  const onHover = (id: ToolID, event: any) => {
+    toolHoverState.value[id] = event.hovering
+      ? {
+          visible: true,
+          toolID: id,
+          displayXY: event.displayXY,
+        }
+      : {
+          visible: false,
+        };
+  };
+
+  const synchronousOverlayInfo = computed(() => {
+    const visibleToolID = Object.keys(toolHoverState.value).find(
+      (toolID) => toolHoverState.value[toolID as ToolID].visible
+    ) as ToolID | undefined;
+
+    return visibleToolID
+      ? toolHoverState.value[visibleToolID]
+      : ({ visible: false } as Info);
+  });
+
+  const { isSet: showOverlay, reset: resetOverlay } =
+    usePopperState(SHOW_OVERLAY_DELAY);
+
+  watch(synchronousOverlayInfo, resetOverlay);
+
+  const overlayInfo = computed(() =>
+    showOverlay.value
+      ? synchronousOverlayInfo.value
+      : ({ visible: false } as Info)
+  );
+
+  const toolStore = useToolStore();
+  const noInfoWithoutSelect = computed(() => {
+    if (toolStore.currentTool !== Tools.Select)
+      return { visible: false } as Info;
+    return overlayInfo.value;
+  });
+
+  return { overlayInfo: noInfoWithoutSelect, onHover };
 };
 
 export const usePlacingAnnotationTool = (

@@ -200,6 +200,12 @@ export const RECTANGLE_LABEL_DEFAULTS = {
   lesion: { color: 'red' },
 };
 
+export const POLYGON_LABEL_DEFAULTS = {
+  red: { color: 'red' },
+  green: { color: '#00ff00' },
+  white: { color: '#ffffff' },
+};
+
 export const DEFAULT_SEGMENT_MASKS: SegmentMask[] = [
   {
     value: 1,

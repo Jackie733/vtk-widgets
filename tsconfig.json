@@ -15,7 +15,7 @@
     "baseUrl": ".",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "types": ["vite/client", "node", "element-plus/global"],
+    "types": ["vite/client", "node"],
     "paths": {
       "@/*": ["./*"]
     },

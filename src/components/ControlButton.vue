@@ -1,48 +1,57 @@
 <template>
-  <div>
-    <el-tooltip :content="name" :placement="tooltipLocation">
-      <el-button
-        size="small"
-        :type="active ? 'primary' : 'default'"
-        :icon="btnIcon"
-        v-bind="$attrs"
-      >
-      </el-button>
-    </el-tooltip>
-  </div>
+  <v-btn
+    size="small"
+    variant="text"
+    dark
+    :height="sizeV"
+    :width="sizeV"
+    :min-height="sizeV"
+    :max-height="sizeV"
+    :class="classV"
+    v-bind="$attrs"
+  >
+    <v-icon :size="iconSize">{{ icon }}</v-icon>
+    <v-tooltip
+      activator="parent"
+      :location="tooltipLocation"
+      transition="slide-y-transition"
+    >
+      <span>{{ name }}</span>
+    </v-tooltip>
+  </v-btn>
 </template>
 
 <script>
-import {
-  Sort,
-  Aim,
-  Rank,
-  Platform,
-  Link,
-  EditPen,
-} from '@element-plus/icons-vue';
-import { Tools } from '../store/tools/types';
-
-const IconMap = {
-  Layouts: Platform,
-  [Tools.WindowLevel]: Sort,
-  [Tools.Pan]: Rank,
-  [Tools.Crosshairs]: Aim,
-  [Tools.Ruler]: Link,
-  [Tools.Paint]: EditPen,
-};
-
 export default {
   name: 'ToolButton',
   props: {
     icon: { type: String, required: true },
     name: { type: String, required: true },
-    active: { type: Boolean, default: false },
+    size: { type: [Number, String], default: 40 },
+    buttonClass: [String, Array, Object],
     tooltipLocation: { type: String, default: 'bottom' },
   },
   computed: {
-    btnIcon() {
-      return IconMap[this.icon];
+    sizeV() {
+      return Number(this.size);
+    },
+    iconSize() {
+      return Math.floor(0.5 * this.sizeV);
+    },
+    classV() {
+      const classSpec = this.buttonClass;
+      if (typeof classSpec === 'string') {
+        return classSpec;
+      }
+      if (Array.isArray(classSpec)) {
+        return classSpec.join(' ');
+      }
+      if (classSpec && Object.keys(classSpec).length) {
+        return Object.keys(this.buttonClass)
+          .filter((key) => this.buttonClass[key])
+          .join(' ');
+      }
+      return '';
     },
   },
 };

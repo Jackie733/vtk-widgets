@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { useThrottleFn } from '@vueuse/core';
-import { Upload } from '@element-plus/icons-vue';
 import { storeToRefs } from 'pinia';
 import { ref, watch } from 'vue';
 import ToolModule from './ToolModule.vue';
@@ -61,14 +60,16 @@ const handleCommand = (command: Layout) => {
   <div class="bg-zinc-800 w-full h-12">
     <div class="flex items-center justify-between h-full px-4">
       <div class="flex items-center gap-1">
-        <el-button
+        <v-btn
           v-if="!hasData"
-          :icon="Upload"
           :loading="isLoading"
+          variant="outlined"
           size="small"
+          prepend-icon="mdi-upload"
           @click="loadData"
-          >Sample</el-button
         >
+          Sample
+        </v-btn>
         <el-dropdown placement="bottom" @command="handleCommand">
           <ControlButton name="Layouts" icon="Layouts" />
           <template #dropdown>
@@ -86,13 +87,13 @@ const handleCommand = (command: Layout) => {
       </div>
       <ToolModule v-if="hasData"></ToolModule>
       <div>
-        <el-button
+        <v-btn
           v-if="!hasData"
-          :icon="Upload"
           :loading="isLoading"
+          variant="outlined"
           size="small"
           @click="loadUserPromptedFiles"
-          >Upload</el-button
+          >Upload</v-btn
         >
         <!-- <QuickInfo v-else /> -->
       </div>
