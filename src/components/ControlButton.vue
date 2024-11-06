@@ -7,6 +7,8 @@
     :width="sizeV"
     :min-height="sizeV"
     :max-height="sizeV"
+    :min-width="sizeV"
+    :max-width="sizeV"
     :class="classV"
     v-bind="$attrs"
   >
@@ -27,7 +29,7 @@ export default {
   props: {
     icon: { type: String, required: true },
     name: { type: String, required: true },
-    size: { type: [Number, String], default: 40 },
+    size: { type: [Number, String], default: 38 },
     buttonClass: [String, Array, Object],
     tooltipLocation: { type: String, default: 'bottom' },
   },
@@ -36,7 +38,7 @@ export default {
       return Number(this.size);
     },
     iconSize() {
-      return Math.floor(0.5 * this.sizeV);
+      return Math.floor(0.6 * this.sizeV);
     },
     classV() {
       const classSpec = this.buttonClass;

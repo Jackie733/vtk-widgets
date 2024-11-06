@@ -18,6 +18,7 @@ import RulerTool from './tools/ruler/RulerTool.vue';
 import PaintTool from './tools/paint/PaintTool.vue';
 import PolygonTool from './tools/polygon/PolygonTool.vue';
 import SelectTool from './tools/SelectTool.vue';
+import BoundingRectangle from './tools/BoundingRectangle.vue';
 import { VtkViewApi } from '../types/vtk-types';
 import { getLPSAxisFromDir } from '../utils/lps';
 import { useCurrentImage } from '../composables/useCurrentImage';
@@ -96,7 +97,6 @@ const selectionPoints = computed(() => {
     )
     .flatMap(({ store, tool }) => store.getPoints(tool.id));
 });
-console.log(selectionPoints);
 </script>
 
 <template>
@@ -210,6 +210,9 @@ console.log(selectionPoints);
             :view-direction="viewDirection"
           />
           <select-tool />
+          <svg class="overlay-no-events">
+            <bounding-rectangle :points="selectionPoints" />
+          </svg>
           <slot></slot>
         </vtk-slice-view>
       </div>

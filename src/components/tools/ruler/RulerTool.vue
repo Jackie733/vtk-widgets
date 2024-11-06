@@ -9,9 +9,13 @@
         :image-id="imageId"
         :view-id="viewId"
         :view-direction="viewDirection"
+        @contextmenu="openContextMenu(ruler.id, $event)"
         @placed="onRulerPlaced"
+        @widgetHover="onHover(ruler.id, $event)"
       />
     </svg>
+    <annotation-info :info="overlayInfo" :tool-store="rulerStore" />
+    <annotation-context-menu ref="contextMenu" :tool-store="rulerStore" />
   </div>
 </template>
 
@@ -22,6 +26,8 @@ import { useToolStore } from '@/src/store/tools';
 import { Tools } from '@/src/store/tools/types';
 import { useRulerStore } from '@/src/store/tools/rulers';
 import { getLPSAxisFromDir } from '@/src/utils/lps';
+import AnnotationContextMenu from '@/src/components/tools/AnnotationContextMenu.vue';
+import AnnotationInfo from '@/src/components/tools/AnnotationInfo.vue';
 import RulerWidget2D from '@/src/components/tools/ruler/RulerWidget2D.vue';
 import { LPSAxisDir } from '@/src/types/lps';
 import { storeToRefs } from 'pinia';
@@ -30,7 +36,9 @@ import { Maybe } from '@/src/types';
 import { useSliceInfo } from '@/src/composables/useSliceInfo';
 import { watchImmediate } from '@vueuse/core';
 import {
+  useContextMenu,
   useCurrentTools,
+  useHover,
   usePlacingAnnotationTool,
 } from '@/src/composables/annotationTool';
 import { useFrameOfReference } from '@/src/composables/useFrameOfReference';
@@ -50,6 +58,8 @@ export default defineComponent({
   },
   components: {
     RulerWidget2D,
+    AnnotationContextMenu,
+    AnnotationInfo,
   },
   setup(props) {
     const { viewDirection, imageId, viewId } = toRefs(props);
@@ -103,6 +113,9 @@ export default defineComponent({
         placingTool.add();
       }
     };
+
+    const { contextMenu, openContextMenu } = useContextMenu();
+
     // --- ruler data --- //
 
     const currentTools = useCurrentTools(rulerStore, viewAxis);
@@ -115,11 +128,17 @@ export default defineComponent({
       }));
     });
 
+    const { onHover, overlayInfo } = useHover(currentTools, slice);
+
     return {
       rulers: currentRulers,
       placingRulerID: placingTool.id,
       onRulerPlaced,
+      contextMenu,
+      openContextMenu,
       rulerStore,
+      onHover,
+      overlayInfo,
     };
   },
 });
