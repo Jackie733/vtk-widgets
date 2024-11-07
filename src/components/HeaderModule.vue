@@ -54,12 +54,17 @@ const loadData = useThrottleFn(async () => {
 const handleCommand = (command: Layout) => {
   useViewStore().setLayout(command);
 };
+
+const toggleSide = () => {
+  useViewStore().toggleSideVisible();
+};
 </script>
 
 <template>
-  <div class="bg-zinc-800 w-full h-12">
-    <div class="flex items-center justify-between h-full px-4">
+  <v-app-bar app clipped-left :height="48">
+    <div class="w-full flex items-center justify-between h-full px-4">
       <div class="flex items-center gap-1">
+        <v-btn size="small" icon="mdi-menu" @click="toggleSide" />
         <v-btn
           v-if="!hasData"
           :loading="isLoading"
@@ -98,5 +103,5 @@ const handleCommand = (command: Layout) => {
         <!-- <QuickInfo v-else /> -->
       </div>
     </div>
-  </div>
+  </v-app-bar>
 </template>

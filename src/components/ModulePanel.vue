@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full w-[320px] flex flex-col border-r-2 border-zinc-700">
+  <div class="h-full w-full flex flex-col border-r-2 border-zinc-700">
     <div id="module-switcher">
       <el-tabs v-model="activeTab">
         <el-tab-pane

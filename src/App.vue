@@ -12,6 +12,7 @@ const { layout } = storeToRefs(useViewStore());
 
 const imageStore = useImageStore();
 const dicomStore = useDICOMStore();
+const viewStore = useViewStore();
 
 const hasData = computed(() => {
   return (
@@ -23,10 +24,23 @@ const hasData = computed(() => {
 
 <template>
   <div class="bg-zinc-900 w-screen h-screen flex flex-col">
-    <HeaderModule :has-data="hasData" />
-    <div class="flex flex-row flex-1">
-      <ModulePanel />
-      <LayoutGrid v-show="hasData" :layout="layout" />
-    </div>
+    <v-app>
+      <HeaderModule :has-data="hasData" />
+      <v-navigation-drawer
+        v-model="viewStore.sideVisible"
+        app
+        clipped
+        touchless
+        width="320"
+        id="left-nav"
+      >
+        <ModulePanel v-if="viewStore.sideVisible" />
+      </v-navigation-drawer>
+      <v-main id="content-main">
+        <div class="h-full flex flex-row flex-1">
+          <LayoutGrid v-show="hasData" :layout="layout" />
+        </div>
+      </v-main>
+    </v-app>
   </div>
 </template>

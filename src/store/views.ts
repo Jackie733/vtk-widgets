@@ -10,12 +10,14 @@ import {
 import { useViewConfigStore } from './view-configs';
 
 interface State {
+  sideVisible: boolean;
   layout: Layout;
   viewSpecs: Record<string, ViewSpec>;
 }
 
 export const useViewStore = defineStore('view', {
   state: (): State => ({
+    sideVisible: true,
     layout: {
       direction: LayoutDirection.V,
       items: [],
@@ -37,6 +39,9 @@ export const useViewStore = defineStore('view', {
       if (id in this.viewSpecs) {
         delete this.viewSpecs[id];
       }
+    },
+    toggleSideVisible() {
+      this.sideVisible = !this.sideVisible;
     },
     setLayout(layout: Layout) {
       this.layout = layout;
