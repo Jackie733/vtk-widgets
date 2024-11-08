@@ -146,11 +146,11 @@ export const Layouts: Record<string, Layout> = [
     items: [
       {
         direction: LayoutDirection.V,
-        items: [InitViewIDs.Coronal, InitViewIDs.Three],
+        items: [InitViewIDs.Axial, InitViewIDs.Three],
       },
       {
         direction: LayoutDirection.V,
-        items: [InitViewIDs.Sagittal, InitViewIDs.Axial],
+        items: [InitViewIDs.Coronal, InitViewIDs.Sagittal],
       },
     ],
   },
