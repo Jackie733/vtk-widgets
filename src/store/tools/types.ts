@@ -3,7 +3,7 @@ import { Store } from 'pinia';
 
 export enum AnnotationToolType {
   Ruler = 'Ruler',
-  // Rectangle = 'Rectangle',
+  Rectangle = 'Rectangle',
   Polygon = 'Polygon',
 }
 
@@ -16,7 +16,7 @@ export enum Tools {
   // Zoom = 'Zoom',
   // Crop = 'Crop',
   Select = 'Select',
-  // Rectangle = 'Rectangle',
+  Rectangle = 'Rectangle',
   Polygon = 'Polygon',
 }
 

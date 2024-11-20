@@ -7,6 +7,7 @@ import { useCrosshairsToolStore } from './crosshairs';
 import { useRulerStore } from './rulers';
 import { usePaintToolStore } from './paint';
 import { usePolygonStore } from './polygons';
+import { useRectangleStore } from './rectangles';
 
 interface State {
   currentTool: Tools;
@@ -17,13 +18,14 @@ export const AnnotationToolStoreMap: Record<
   () => AnnotationToolStore
 > = {
   [AnnotationToolType.Polygon]: usePolygonStore,
-  // [AnnotationToolType.Rectangle]: null,
+  [AnnotationToolType.Rectangle]: useRectangleStore,
   [AnnotationToolType.Ruler]: useRulerStore,
 } as const;
 
 export const ToolStoreMap: Record<Tools, Maybe<() => IToolStore>> = {
   [Tools.Pan]: null,
   [Tools.WindowLevel]: null,
+  [Tools.Select]: null,
   [Tools.Crosshairs]: useCrosshairsToolStore,
   [Tools.Paint]: usePaintToolStore,
   ...AnnotationToolStoreMap,

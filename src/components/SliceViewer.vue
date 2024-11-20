@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia';
 import { whenever } from '@vueuse/core';
 import vtkMouseCameraTrackballPanManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballPanManipulator';
 import vtkMouseCameraTrackballZoomToMouseManipulator from '@kitware/vtk.js/Interaction/Manipulators/MouseCameraTrackballZoomToMouseManipulator';
+import RectangleTool from '@/src/components/tools/rectangle/RectangleTool.vue';
 import { LPSAxisDir } from '../types/lps';
 import VtkSliceView from './vtk/VtkSliceView.vue';
 import VtkBaseSliceRepresentation from './vtk/VtkBaseSliceRepresentation.vue';
@@ -205,6 +206,11 @@ const selectionPoints = computed(() => {
             :view-direction="viewDirection"
           />
           <ruler-tool
+            :view-id="viewId"
+            :image-id="currentImageID"
+            :view-direction="viewDirection"
+          />
+          <rectangle-tool
             :view-id="viewId"
             :image-id="currentImageID"
             :view-direction="viewDirection"

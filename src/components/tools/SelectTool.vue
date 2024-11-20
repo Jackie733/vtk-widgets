@@ -17,6 +17,7 @@ onVTKEvent(
   (event: any) => {
     const withModifiers = !!(event.shiftKey || event.controlKey);
     const selectedData = view.widgetManager.getSelectedData();
+    console.log('onLeftButtonPress', event, selectedData);
     if ('widget' in selectedData) {
       // clicked in empty space.
       const widget = selectedData.widget as vtkAnnotationToolWidget;

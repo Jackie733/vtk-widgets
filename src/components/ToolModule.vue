@@ -63,6 +63,18 @@ const currentTool = computed(() => toolStore.currentTool);
           @click="toggle"
         />
       </groupable-item>
+      <groupable-item
+        v-slot:default="{ active, toggle }"
+        :value="Tools.Rectangle"
+      >
+        <control-button
+          icon="mdi-rectangle"
+          name="Rectangle"
+          :buttonClass="['tool-btn', active ? 'tool-btn-selected' : '']"
+          :disabled="noCurrentImage"
+          @click="toggle"
+        />
+      </groupable-item>
       <groupable-item v-slot:default="{ active, toggle }" :value="Tools.Paint">
         <control-button
           icon="mdi-brush"
