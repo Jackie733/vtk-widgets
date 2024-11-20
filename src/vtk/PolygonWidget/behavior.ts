@@ -47,7 +47,7 @@ export default function widgetBehavior(publicAPI: any, model: any) {
     const selections = model._widgetManager.getSelections();
     const overSegment =
       selections?.[0]?.getProperties().prop ===
-      model.representations[1].getActors()[0];
+      model.representations[1].getActors()[0]; // line representation is second representation
     return overSegment && !overUnselectedHandle;
   };
 
@@ -97,7 +97,7 @@ export default function widgetBehavior(publicAPI: any, model: any) {
     if (model.activeState === moveHandle && handles.length >= 3) {
       // Check moveHandle distance to first handle
       const moveCoords = model._apiSpecificRenderWindow.worldToDisplay(
-        ...moveHandle[0].getOrigin(),
+        ...moveHandle.getOrigin(),
         model._renderer
       );
       const firstCoords = model._apiSpecificRenderWindow.worldToDisplay(
@@ -132,12 +132,12 @@ export default function widgetBehavior(publicAPI: any, model: any) {
 
       model.widgetState.setFinishable(isFinishable());
 
-      if (model.widgetState.getFinishable()) {
+      if (model.widgetState.getFinishable())
         // snap to first point
         model.activeState.setOrigin(
           model.widgetState.getHandles()[0].getOrigin()
         );
-      }
+
       publicAPI.invokeInteractionEvent();
 
       return macro.EVENT_ABORT;
@@ -151,10 +151,18 @@ export default function widgetBehavior(publicAPI: any, model: any) {
     newHandle.setOrigin(moveHandle.getOrigin());
   }
 
+  // --------------------------------------------------------------------------
+  // Left press: Select handle to drag / Add new handle
+  // --------------------------------------------------------------------------
+
   publicAPI.handleLeftButtonPress = (event: vtkMouseEvent) => {
     const activeWidget = model._widgetManager.getActiveWidget();
 
-    if (!model.manipulator || (activeWidget && activeWidget !== publicAPI)) {
+    if (
+      !model.manipulator ||
+      // If hovering over another widget, don't consume event.
+      (activeWidget && activeWidget !== publicAPI)
+    ) {
       return macro.VOID;
     }
 
@@ -162,6 +170,7 @@ export default function widgetBehavior(publicAPI: any, model: any) {
       return macro.VOID;
     }
 
+    // Drop point?
     const manipulator =
       model.activeState?.getManipulator?.() ?? model.manipulator;
     if (model.widgetState.getPlacing() && manipulator) {
@@ -196,12 +205,16 @@ export default function widgetBehavior(publicAPI: any, model: any) {
     return macro.VOID;
   };
 
+  // --------------------------------------------------------------------------
+  // Mouse move: Drag selected handle / Handle follow the mouse
+  // --------------------------------------------------------------------------
+
   publicAPI.handleMouseMove = (event: vtkMouseEvent) => {
     if (
       model.pickable &&
       model.dragable &&
       model.activeState &&
-      updateActiveStateHandle(event) === macro.EVENT_ABORT
+      updateActiveStateHandle(event) === macro.EVENT_ABORT // side effect!
     ) {
       if (freeHanding) {
         addHandle();
@@ -225,6 +238,10 @@ export default function widgetBehavior(publicAPI: any, model: any) {
 
     return macro.VOID;
   };
+
+  // --------------------------------------------------------------------------
+  // Left release: Finish drag
+  // --------------------------------------------------------------------------
 
   // Detect double click by diffing these.
   let lastReleaseTime = 0;
@@ -270,7 +287,7 @@ export default function widgetBehavior(publicAPI: any, model: any) {
       model._interactor.cancelAnimation(publicAPI);
       setDragging(false);
       model._widgetManager.enablePicking();
-      // So a following left click without moving the mouse can immediately grab the handle.
+      // So a following left click without moving the mouse can immediately grab the handle,
       // we don't call model.widgetState.deactivate() here.
       publicAPI.invokeEndInteractionEvent();
       return macro.EVENT_ABORT;
@@ -287,7 +304,7 @@ export default function widgetBehavior(publicAPI: any, model: any) {
     } else if (isDoubleClick(event)) {
       // try to finish placing
       const handles = model.widgetState.getHandles();
-      // need 3 handles to finish. Double click created 2 handles, 1 extra.
+      // Need 3 handles to finish.  Double click created 2 handles, 1 extra.
       if (handles.length >= 4) {
         removeLastHandle();
         finishPlacing();
@@ -327,6 +344,7 @@ export default function widgetBehavior(publicAPI: any, model: any) {
     return macro.VOID;
   };
 
+  // Called when mouse moves off handle.
   publicAPI.deactivateAllHandles = () => {
     model.widgetState.deactivate();
     // Context menu should only show if hovering over the tool.
@@ -346,7 +364,7 @@ export default function widgetBehavior(publicAPI: any, model: any) {
     const overSegment = checkOverSegment();
 
     if (overSegment) {
-      // Allow inserting points when over a segment
+      // Allow inserting ponts when over a segment
       widgetActions.push({
         name: 'Add Point',
         func: () => {

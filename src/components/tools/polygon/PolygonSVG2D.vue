@@ -12,7 +12,7 @@
       :visibility="index === 0 ? firstHandleVisibility : handleVisibility"
     />
     <polyline
-      :point="linePoints"
+      :points="linePoints"
       :stroke="color"
       :stroke-width="strokeWidth"
       fill="none"
@@ -80,7 +80,6 @@ export default defineComponent({
     const handleVisibility = computed(() => {
       return showHandles.value ? 'visible' : 'hidden';
     });
-
     const firstHandleVisibility = computed(() => {
       if (finishPossible.value) {
         return 'visible';
@@ -93,9 +92,9 @@ export default defineComponent({
     const linePoints = ref<string>('');
 
     const updatePoints = () => {
-      const viewRender = view.renderer;
+      const viewRenderer = view.renderer;
       const svgPoints = points.value.map((point) => {
-        const point2D = worldToSVG(point, viewRender);
+        const point2D = worldToSVG(point, viewRenderer);
         return {
           point: point2D ?? ([0, 0] as Vector2),
           radius: POINT_RADIUS,
@@ -110,7 +109,7 @@ export default defineComponent({
       // Show point under mouse if one point placed
       if (svgPoints.length > 0 && placing.value && movePoint.value) {
         const moveHandlePoint =
-          worldToSVG(movePoint.value, viewRender) ?? ([0, 0] as Vector2);
+          worldToSVG(movePoint.value, viewRenderer) ?? ([0, 0] as Vector2);
         svgPoints.push({
           point: moveHandlePoint,
           radius: POINT_RADIUS,
@@ -134,6 +133,8 @@ export default defineComponent({
       deep: true,
       immediate: true,
     });
+
+    // --- resize --- //
 
     const container = vtkFieldRef(view.renderWindowView, 'container');
     useResizeObserver(container, () => {

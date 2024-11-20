@@ -1,14 +1,17 @@
+import polybool, { Polygon as LibPolygon, Vec2, Vec6 } from '@velipso/polybool';
+import type { Vector3, Vector2 } from '@kitware/vtk.js/types';
+import { computed } from 'vue';
+import {
+  ToolSelection,
+  useToolSelectionStore,
+} from '@/src/store/tools/toolSelection';
+import { AnnotationToolType } from '@/src/store/tools/types';
+import { POLYGON_LABEL_DEFAULTS } from '@/src/config';
+import { Manifest, StateFile } from '@/src/io/state-file/schema';
+import { getPlaneTransforms } from '@/src/utils/frameOfReference';
 import { ToolID } from '@/src/types/annotation-tool';
 import { defineAnnotationToolStore } from '@/src/utils/defineAnnotationToolStore';
-import type { Vector2, Vector3 } from '@kitware/vtk.js/types';
-import polybool, { Polygon as LibPolygon, Vec2, Vec6 } from '@velipso/polybool';
-import { POLYGON_LABEL_DEFAULTS } from '@/src/config';
-import { getPlaneTransforms } from '@/src/utils/frameOfReference';
-import { computed } from 'vue';
-import { Manifest, StateFile } from '@/src/io/state-file/schema';
 import { useAnnotationTool } from './useAnnotationTool';
-import { ToolSelection, useToolSelectionStore } from './toolSelection';
-import { AnnotationToolType } from './types';
 
 const toolDefaults = () => ({
   points: [] as Array<Vector3>,
@@ -22,6 +25,7 @@ const ensureVec2 = (regions: (Vec2 | Vec6)[][]) => {
   return !remapToVec2Needed
     ? (regions as Vec2[][])
     : regions.map((region) => {
+        // ensure Vec2 points, and not Vec6 for bezier control points
         return region.map((point) => [point[4], point[5]] as Vec2);
       });
 };
@@ -37,6 +41,7 @@ export const usePolygonStore = defineAnnotationToolStore('polygon', () => {
     return tool.points;
   }
 
+  // -- merge tool helpers -- //
   type Tool = (typeof toolAPI.tools.value)[number];
 
   const toPolyLibStructure = (polygon: Tool) => {
@@ -57,8 +62,8 @@ export const usePolygonStore = defineAnnotationToolStore('polygon', () => {
   const pointEquals = (a: Vector2, b: Vector2) =>
     a[0] === b[0] && a[1] === b[1];
 
-  // after union, regions will have shared points because we require overlay to union.
-  // Create on region/ring by splicing in the next region at the common point.
+  // After union, regions will have shared points because we require overlap to union.
+  // Create one region/ring by splicing in the next region at the common point.
   const mergeRegions = (regions: Vector2[][]) => {
     const [mergedRegion, ...candidates] = regions;
 
@@ -87,6 +92,7 @@ export const usePolygonStore = defineAnnotationToolStore('polygon', () => {
       const startWithCommonPoint = [...toMerge, ...oldStart];
       mergedRegion.splice(mergedCommonPointIndex, 0, ...startWithCommonPoint);
     }
+
     return mergedRegion;
   };
 
@@ -146,7 +152,8 @@ export const usePolygonStore = defineAnnotationToolStore('polygon', () => {
       const overlappingIndex = rest.findIndex((candidate) =>
         overlapping.some((inTool) => mergable(candidate, inTool))
       );
-      if (overlappingIndex < 0) return [];
+      if (overlappingIndex < 0) return []; // selected tool is not overlapping
+      // use splice to remove the overlapping tool from the rest array
       overlapping.push(...rest.splice(overlappingIndex, 1));
     }
     return overlapping;
@@ -172,6 +179,8 @@ export const usePolygonStore = defineAnnotationToolStore('polygon', () => {
     if (mergeable.length === 0) return;
     mergeTools([lastTool, ...mergeable]);
   }
+
+  // --- serialization --- //
 
   function serialize(state: StateFile) {
     state.manifest.tools.polygons = toolAPI.serializeTools();

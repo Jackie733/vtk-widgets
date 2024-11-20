@@ -1,11 +1,15 @@
 import { vtkSubscription } from '@kitware/vtk.js/interfaces';
+import vtkAbstractWidget from '@kitware/vtk.js/Widgets/Core/AbstractWidget';
+import vtkAbstractWidgetFactory from '@kitware/vtk.js/Widgets/Core/AbstractWidgetFactory';
+import vtkPlaneManipulator from '@kitware/vtk.js/Widgets/Manipulators/PlaneManipulator';
+import vtkWidgetState from '@kitware/vtk.js/Widgets/Core/WidgetState';
+import { usePolygonStore } from '@/src/store/tools/polygons';
 import {
-  IAnnotationToolWidgetInitialValues,
   vtkAnnotationToolWidget,
   vtkAnnotationWidgetPointState,
   vtkAnnotationWidgetState,
-} from '../ToolWidgetUtils/types';
-import vtkAbstractWidgetFactory from '@kitware/vtk.js/Widgets/Core/AbstractWidgetFactory';
+} from '@/src/vtk/ToolWidgetUtils/types';
+import { IAnnotationToolWidgetInitialValues } from '@/src/types/annotation-tool';
 
 export interface vtkPolygonWidgetPointState
   extends vtkAnnotationWidgetPointState {}

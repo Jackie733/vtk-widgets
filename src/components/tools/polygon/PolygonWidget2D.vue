@@ -21,6 +21,7 @@ import {
   useWidgetVisibility,
 } from '@/src/composables/annotationTool';
 import { getCSSCoordinatesFromEvent } from '@/src/utils/vtk-helpers';
+import { usePolygonStore as useStore } from '@/src/store/tools/polygons';
 import vtkWidgetFactory, {
   vtkPolygonViewWidget as WidgetView,
 } from '@/src/vtk/PolygonWidget';
@@ -29,7 +30,6 @@ import type { Vector3 } from '@kitware/vtk.js/types';
 import { ToolID } from '@/src/types/annotation-tool';
 import { VtkViewContext } from '@/src/components/vtk/context';
 import { useSliceInfo } from '@/src/composables/useSliceInfo';
-import { usePolygonStore as useStore } from '@/src/store/tools/polygons';
 import SVG2DComponent from './PolygonSVG2D.vue';
 
 export default defineComponent({
@@ -80,6 +80,8 @@ export default defineComponent({
       widgetFactory.delete();
     });
 
+    // --- reset on slice/image changes --- //
+
     watch([slice, imageId], () => {
       if (isPlacing.value) {
         widget.resetInteractions();
@@ -113,7 +115,11 @@ export default defineComponent({
       }
     });
 
+    // --- right click handling --- //
+
     useRightClickContextMenu(emit, widget);
+
+    // --- manipulator --- //
 
     const manipulator = vtkPlaneManipulator.newInstance();
     widget.setManipulator(manipulator);
@@ -127,8 +133,12 @@ export default defineComponent({
       );
     });
 
+    // --- visibility --- //
+
     const isVisible = computed(() => tool.value?.slice === slice.value);
     useWidgetVisibility(widget, isVisible, view);
+
+    // --- //
 
     const editState = reactive({
       movePoint: null as Maybe<Vector3>,

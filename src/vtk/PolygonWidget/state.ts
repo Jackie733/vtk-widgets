@@ -4,14 +4,14 @@ import bounds from '@kitware/vtk.js/Widgets/Core/StateBuilder/boundsMixin';
 import visibleMixin from '@kitware/vtk.js/Widgets/Core/StateBuilder/visibleMixin';
 import scale1Mixin from '@kitware/vtk.js/Widgets/Core/StateBuilder/scale1Mixin';
 import { Vector3 } from '@kitware/vtk.js/types';
+import vtkAnnotationWidgetState from '@/src/vtk/ToolWidgetUtils/annotationWidgetState';
 import { Polygon } from '@/src/types/polygon';
+import { AnnotationToolType } from '@/src/store/tools/types';
 import { getImageMetadata } from '@/src/composables/useCurrentImage';
 import { getSmallestSpacing } from '@/src/utils/frameOfReference';
-import { AnnotationToolType } from '@/src/store/tools/types';
 import createPointState from '../ToolWidgetUtils/pointState';
 import { watchState } from '../ToolWidgetUtils/utils';
 import decimate from './decimate';
-import vtkAnnotationWidgetState from '../ToolWidgetUtils/annotationWidgetState';
 
 export const MoveHandleLabel = 'moveHandle';
 export const HandlesLabel = 'handles';
@@ -48,6 +48,8 @@ function vtkPolygonWidgetState(publicAPI: any, model: any) {
 
   model.finishable = false;
 
+  // After deserialize, Pinia store already added points
+  // and addPoint will be false.
   publicAPI.addHandle = ({ insertIndex = -1, addPoint = true } = {}) => {
     const index = insertIndex === -1 ? model.handles.length : insertIndex;
 
@@ -82,7 +84,7 @@ function vtkPolygonWidgetState(publicAPI: any, model: any) {
     publicAPI.bindState(handlePublicAPI, [HandlesLabel]);
     // bindState pushes handle at end of labels array,
     // but we may have inserted handle in middle of array.
-    // Downstream WidgetRepresentation get order of
+    // Downstream WidgetRepresentations get order of
     // state/handles from internal HandlesLabel array.
     // So copy handles array.
     model.labels[HandlesLabel] = [...model.handles];
@@ -166,7 +168,7 @@ function _createPolygonWidgetState(
 
 const createPolygonWidgetState = macro.newInstance(
   _createPolygonWidgetState,
-  'vtkPolygonWIdgetState'
+  'vtkPolygonWidgetState'
 );
 
 export default createPolygonWidgetState;

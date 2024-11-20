@@ -8,8 +8,14 @@ import vtkLineGlyphRepresentation from '@/src/vtk/LineGlyphRepresentation';
 import widgetBehavior from './behavior';
 import stateGenerator, { HandlesLabel, MoveHandleLabel } from './state';
 
+// ----------------------------------------------------------------------------
+// Factory
+// ----------------------------------------------------------------------------
+
 function vtkPolygonWidget(publicAPI, model) {
   model.classHierarchy.push('vtkPolygonWidget');
+
+  // --- Widget Requirement ---------------------------------------------------
 
   publicAPI.getRepresentationsForViewType = () => [
     {
@@ -30,10 +36,15 @@ function vtkPolygonWidget(publicAPI, model) {
     },
   ];
 
+  // Default manipulator
   model.manipulator = vtkPlanePointManipulator.newInstance();
 }
 
+// ----------------------------------------------------------------------------
+
 const DEFAULT_VALUES = {};
+
+// ----------------------------------------------------------------------------
 
 export function extend(publicAPI, model, initialValues = {}) {
   Object.assign(model, DEFAULT_VALUES, initialValues);
@@ -48,6 +59,10 @@ export function extend(publicAPI, model, initialValues = {}) {
   vtkPolygonWidget(publicAPI, model);
 }
 
+// ----------------------------------------------------------------------------
+
 export const newInstance = macro.newInstance(extend, 'vtkPolygonWidget');
+
+// ----------------------------------------------------------------------------
 
 export default { newInstance, extend };
