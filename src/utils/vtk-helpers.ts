@@ -2,6 +2,9 @@ import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/C
 import vtkRenderer from '@kitware/vtk.js/Rendering/Core/Renderer';
 import vtkOpenGLRenderWindow from '@kitware/vtk.js/Rendering/OpenGL/RenderWindow';
 import type { Vector2, Vector3 } from '@kitware/vtk.js/types';
+import vtkPiecewiseFunctionProxy from '@kitware/vtk.js/Proxy/Core/PiecewiseFunctionProxy';
+import vtkPiecewiseFunction from '@kitware/vtk.js/Common/DataModel/PiecewiseFunction';
+import { OpacityFunction } from '../types/views';
 
 export function computeWorldToDisplay(
   xyz: Vector3,
@@ -56,6 +59,36 @@ export function getCSSCoordinatesFromEvent(eventData: any) {
 }
 
 /**
+ * Shifts the opacity points from a preset.
+ */
+export function getShiftedOpacityFromPreset(
+  presetName: string,
+  effectiveRange: [number, number],
+  shift: number,
+  shiftAlpha: number
+) {
+  const preset = vtkColorMaps.getPresetByName(presetName);
+  if (preset.OpacityPoints) {
+    const OpacityPoints = preset.OpacityPoints as number[];
+    const points = [];
+    for (let i = 0; i < OpacityPoints.length; i += 2) {
+      points.push([OpacityPoints[i], OpacityPoints[i + 1]]);
+    }
+
+    const [xmin, xmax] = effectiveRange;
+    const width = xmax - xmin;
+    return points.map(([x, y]) => {
+      // Non-zero values should be affected by shift
+      // but preset values of zero should not
+      const shifted = y && y - shiftAlpha;
+      const yVal = Math.max(Math.min(shifted, 1), 0);
+      return [(x - xmin) / width + shift, yVal] as Vector2;
+    });
+  }
+  return null;
+}
+
+/**
  * Retrieves the color function range, if any.
  *
  * Will only return the color function range if the preset
@@ -82,4 +115,66 @@ export function getColorFunctionRangeFromPreset(
     return [min, max];
   }
   return null;
+}
+
+/**
+ * Retrieves an OpacityFunction from a preset
+ * @param presetName
+ * @returns
+ */
+export function getOpacityFunctionFromPreset(
+  presetName: string
+): Partial<OpacityFunction> {
+  const preset = vtkColorMaps.getPresetByName(presetName);
+
+  if (preset.OpacityPoints) {
+    return {
+      mode: vtkPiecewiseFunctionProxy.Mode.Points,
+      preset: presetName,
+      shift: 0,
+      shiftAlpha: 0,
+    };
+  }
+  return {
+    mode: vtkPiecewiseFunctionProxy.Mode.Gaussians,
+    // deep-copy necessary
+    gaussians: JSON.parse(
+      JSON.stringify(vtkPiecewiseFunctionProxy.Defaults.Gaussians)
+    ),
+  };
+}
+
+/**
+ * Applies a set of points to a piecewise function.
+ * @param pwf
+ * @param points
+ * @param range
+ */
+export function applyPointsToPiecewiseFunction(
+  pwf: vtkPiecewiseFunction,
+  points: Vector2[],
+  range: Vector2
+) {
+  const width = range[1] - range[0];
+  const rescaled = points.map(([x, y]) => [x * width + range[0], y]);
+
+  pwf.removeAllPoints();
+  rescaled.forEach(([x, y]) => pwf.addPoint(x, y));
+}
+
+/**
+ * Applies a set of nodes to a piecewise function.
+ * @param nodes
+ * @param range
+ * @param pwf
+ */
+export function applyNodesToPiecewiseFunction(
+  pwf: vtkPiecewiseFunction,
+  nodes: any[],
+  range: Vector2
+) {
+  const width = range[1] - range[0];
+  const rescaled = nodes.map((n) => ({ ...n, x: n.x * width + range[0] }));
+
+  pwf.setNodes(rescaled);
 }

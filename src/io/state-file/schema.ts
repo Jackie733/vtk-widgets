@@ -21,6 +21,7 @@ import type {
   SliceConfig,
   WindowLevelConfig,
   LayersConfig,
+  VolumeColorConfig,
 } from '../../store/view-configs/types';
 import type {
   ColorBy,
@@ -31,6 +32,7 @@ import type {
   OpacityNodes,
   ColoringConfig,
   BlendConfig,
+  CVRConfig,
 } from '../../types/views';
 
 export enum DatasetType {
@@ -162,6 +164,27 @@ const ColoringConfig = z.object({
   opacityFunction: OpacityFunction,
 }) satisfies z.ZodType<ColoringConfig>;
 
+const CVRConfig = z.object({
+  enabled: z.boolean(),
+  lightFollowsCamera: z.boolean(),
+  volumeQuality: z.number(),
+  useVolumetricScatteringBlending: z.boolean(),
+  volumetricScatteringBlending: z.number(),
+  useLocalAmbientOcclusion: z.boolean(),
+  laoKernelRadius: z.number(),
+  laoKernelSize: z.number(),
+  ambient: z.number(),
+  diffuse: z.number(),
+  specular: z.number(),
+}) satisfies z.ZodType<CVRConfig>;
+
+const VolumeColorConfig = z.object({
+  colorBy: ColorBy,
+  transferFunction: ColorTransferFunction,
+  opacityFunction: OpacityFunction,
+  cvr: CVRConfig,
+}) satisfies z.ZodType<VolumeColorConfig>;
+
 const BlendConfig = z.object({
   opacity: z.number(),
   visibility: z.boolean(),
@@ -179,6 +202,7 @@ const ViewConfig = z.object({
   slice: SliceConfig.optional(),
   layers: LayersConfig.optional(),
   camera: CameraConfig.optional(),
+  volumeColorConfig: VolumeColorConfig.optional(),
 });
 export type ViewConfig = z.infer<typeof ViewConfig>;
 

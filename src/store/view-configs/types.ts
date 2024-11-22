@@ -5,6 +5,7 @@ import {
   ColorTransferFunction,
   BlendConfig,
   OpacityFunction,
+  CVRConfig,
 } from '@/src/types/views';
 
 export interface CameraConfig {
@@ -22,6 +23,16 @@ export interface SliceConfig {
   max: number;
   axisDirection: LPSAxisDir;
   syncState: boolean;
+}
+
+export interface VolumeColorConfig {
+  colorBy: {
+    arrayName: string;
+    location: string;
+  };
+  transferFunction: ColorTransferFunction;
+  opacityFunction: OpacityFunction;
+  cvr: CVRConfig;
 }
 
 export interface WindowLevelConfig {

@@ -1,9 +1,18 @@
 import { StateFile, ViewConfig } from '@/src/io/state-file/schema';
 import { ensureDefault } from '@/src/utils';
 import { DoubleKeyRecord } from '@/src/utils/doubleKeyRecord';
-import { CameraConfig, SliceConfig, WindowLevelConfig } from './types';
+import {
+  CameraConfig,
+  SliceConfig,
+  WindowLevelConfig,
+  VolumeColorConfig,
+} from './types';
 
-type SubViewConfig = CameraConfig | SliceConfig | WindowLevelConfig;
+type SubViewConfig =
+  | CameraConfig
+  | SliceConfig
+  | WindowLevelConfig
+  | VolumeColorConfig;
 
 type ViewConfigGetter = (
   viewID: string,
