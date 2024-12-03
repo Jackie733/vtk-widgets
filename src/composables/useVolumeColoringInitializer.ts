@@ -1,8 +1,8 @@
-import { computed, MaybeRef, unref } from 'vue';
+import { useImage } from '@/src/composables/useCurrentImage';
+import useVolumeColoringStore from '@/src/store/view-configs/volume-coloring';
+import { Maybe } from '@/src/types';
 import { watchImmediate } from '@vueuse/core';
-import { Maybe } from '../types';
-import { useVolumeColoringStore } from '../store/view-configs/volume-coloring';
-import { useImage } from './useCurrentImage';
+import { MaybeRef, computed, unref } from 'vue';
 
 export function useVolumeColoringInitializer(
   viewId: MaybeRef<string>,

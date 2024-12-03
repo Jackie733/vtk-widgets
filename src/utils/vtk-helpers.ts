@@ -126,6 +126,7 @@ export function getOpacityFunctionFromPreset(
   presetName: string
 ): Partial<OpacityFunction> {
   const preset = vtkColorMaps.getPresetByName(presetName);
+  console.log('preset', presetName);
 
   if (preset.OpacityPoints) {
     return {

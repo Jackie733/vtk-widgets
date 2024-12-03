@@ -2,7 +2,7 @@ import vtkColorTransferFunction from '@kitware/vtk.js/Rendering/Core/ColorTransf
 import vtkPiecewiseFunction from '@kitware/vtk.js/Common/DataModel/PiecewiseFunction';
 import vtkColorMaps from '@kitware/vtk.js/Rendering/Core/ColorTransferFunction/ColorMaps';
 import vtkPiecewiseFunctionProxy from '@kitware/vtk.js/Proxy/Core/PiecewiseFunctionProxy';
-import { vtkPiecewiseGaussianWidget } from '@kitware/vtk.js/Interaction/Widgets/PiecewiseGaussianWidget';
+import vtkPiecewiseGaussianWidget from '@kitware/vtk.js/Interaction/Widgets/PiecewiseGaussianWidget';
 import { computed, MaybeRef, unref, watchEffect } from 'vue';
 import {
   ColoringConfig,

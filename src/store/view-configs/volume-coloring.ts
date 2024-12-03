@@ -1,27 +1,27 @@
-import { isDicomImage } from '@/src/utils/dataSelection';
-import { DEFAULT_PRESET, DEFAULT_PRESET_BY_MODALITY } from '@/src/config';
-import { ColorTransferFunction } from '@/src/types/views';
+import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
+import vtkPiecewiseFunctionProxy from '@kitware/vtk.js/Proxy/Core/PiecewiseFunctionProxy';
 import {
   getColorFunctionRangeFromPreset,
   getOpacityFunctionFromPreset,
 } from '@/src/utils/vtk-helpers';
-import vtkPiecewiseFunctionProxy from '@kitware/vtk.js/Proxy/Core/PiecewiseFunctionProxy';
+import { DEFAULT_PRESET_BY_MODALITY, DEFAULT_PRESET } from '@/src/config';
+import { ColorTransferFunction } from '@/src/types/views';
 import { defineStore } from 'pinia';
 import { reactive } from 'vue';
 import {
-  deleteSecondKey,
   DoubleKeyRecord,
+  deleteSecondKey,
   getDoubleKeyRecord,
   patchDoubleKeyRecord,
 } from '@/src/utils/doubleKeyRecord';
 import { DeepPartial, Maybe } from '@/src/types';
 import { identity } from '@/src/utils';
-import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
-import { ViewConfig } from '@/src/io/state-file/schema';
-import { useDICOMStore } from '../dicom';
-import { VolumeColorConfig } from './types';
-import { useImageStore } from '../images';
+import { isDicomImage } from '@/src/utils/dataSelection';
 import { createViewConfigSerializer } from './common';
+import { ViewConfig } from '../../io/state-file/schema';
+import { VolumeColorConfig } from './types';
+import { useDICOMStore } from '../dicom';
+import { useImageStore } from '../images';
 
 export const DEFAULT_AMBIENT = 0.2;
 export const DEFAULT_DIFFUSE = 0.7;
@@ -41,9 +41,15 @@ function getPresetFromImageModality(imageID: string) {
   return DEFAULT_PRESET;
 }
 
-// Gets partial color and opacity function configs from a preset.
+/**
+ * Gets partial color and opacity function configs from a preset.
+ * @param preset
+ * @returns
+ */
 function getColorAndOpacityFuncsFromPreset(preset: string) {
-  const ctFunc: Partial<ColorTransferFunction> = { preset };
+  const ctFunc: Partial<ColorTransferFunction> = {
+    preset,
+  };
 
   const ctRange = getColorFunctionRangeFromPreset(preset);
   if (ctRange) {
@@ -167,7 +173,7 @@ export const useVolumeColoringStore = defineStore('volumeColoring', () => {
   };
 
   /**
-   * Sets all views defaults for given dataset.
+   * Sets all views' defaults for given dataset.
    * @param dataID
    * @param defaults
    */
@@ -208,12 +214,14 @@ export const useVolumeColoringStore = defineStore('volumeColoring', () => {
     updateColorTransferFunction,
     updateOpacityFunction,
     updateCVRParameters,
-    setColorPreset,
     resetToDefaultColoring,
     setDefaults,
+    setColorPreset,
     removeView,
     removeData,
     serialize,
     deserialize,
   };
 });
+
+export default useVolumeColoringStore;
