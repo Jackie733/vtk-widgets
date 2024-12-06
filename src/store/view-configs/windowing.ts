@@ -24,9 +24,15 @@ export const defaultWindowLevelConfig = (): WindowLevelConfig => ({
   },
 });
 
+type WindowLevel = {
+  width: number;
+  level: number;
+};
+
 const useWindowingStore = defineStore('windowing', () => {
   const configs = reactive<DoubleKeyRecord<WindowLevelConfig>>({});
   const syncAcrossViews = ref(true);
+  const runtimeConfigWindowLevel = ref<WindowLevel | undefined>();
 
   const setSyncAcrossViews = (yn: boolean) => {
     syncAcrossViews.value = yn;
@@ -105,8 +111,8 @@ const useWindowingStore = defineStore('windowing', () => {
   };
 
   return {
+    runtimeConfigWindowLevel,
     configs,
-    syncAcrossViews,
     setSyncAcrossViews,
     getConfig,
     updateConfig,

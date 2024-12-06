@@ -28,8 +28,11 @@ export type ArchiveContents = Record<string, File>;
 export type ArchiveCache = Map<File, Awaitable<ArchiveContents>>;
 
 export interface ImportContext {
+  // Caches URL responses
   fetchFileCache?: FetchCache<File>;
+  // Caches archives. ArchiveFile -> { [archivePath]: File }
   archiveCache?: ArchiveCache;
+  // Records dicom files
   dicomDataSources?: DataSource[];
 }
 

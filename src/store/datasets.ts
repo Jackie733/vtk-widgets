@@ -9,6 +9,8 @@ import {
   isDicomImage,
   isRegularImage,
 } from '../utils/dataSelection';
+import { useErrorMessage } from '../composables/useErrorMessage';
+import { StateFile } from '../io/state-file/schema';
 
 export const DataType = {
   Image: 'Image',
@@ -41,8 +43,15 @@ export const useDatasetStore = defineStore('dataset', () => {
 
     // if selection is dicom, call buildVolume
     if (isDicomImage(sel)) {
-      dicomStore.buildVolume(sel);
+      useErrorMessage('Failed to build volume', () =>
+        dicomStore.buildVolume(sel)
+      );
     }
+  }
+
+  async function serialize(stateFile: StateFile) {
+    // TODO
+    console.log(stateFile);
   }
 
   const remove = (id: string) => {
@@ -65,5 +74,6 @@ export const useDatasetStore = defineStore('dataset', () => {
     idsAsSelections,
     setPrimarySelection,
     remove,
+    serialize,
   };
 });

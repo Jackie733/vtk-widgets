@@ -126,6 +126,7 @@ export async function importDataSources(dataSources: DataSource[]) {
   };
 
   const middleware = [
+    // updating the file type should be first in the pipeline
     updateFileMimeType,
     restoreStateFile,
     downloadUrl,

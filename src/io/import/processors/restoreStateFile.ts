@@ -5,6 +5,9 @@ import { Awaitable } from '@vueuse/core';
 import { useDICOMStore } from '@/src/store/dicom';
 import { useViewStore } from '@/src/store/views';
 import { useDatasetStore } from '@/src/store/datasets';
+import { useSegmentGroupStore } from '@/src/store/segmentGroups';
+import { useToolStore } from '@/src/store/tools';
+import { useLayersStore } from '@/src/store/layers';
 import {
   ArchiveContents,
   ImportContext,
@@ -236,7 +239,15 @@ const restoreStateFile: ImportHandler = async (dataSource, pipelineContext) => {
     useViewStore().deserialize(manifest.views, stateIDToStoreID);
 
     // Restore the labelmaps
-    //
+    const segmentGroupIDMap = await useSegmentGroupStore().deserialize(
+      manifest,
+      restOfStateFile,
+      stateIDToStoreID
+    );
+
+    useToolStore().deserialize(manifest, segmentGroupIDMap, stateIDToStoreID);
+
+    useLayersStore().deserialize(manifest, stateIDToStoreID);
 
     return pipelineContext.done();
   }

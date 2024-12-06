@@ -1,4 +1,11 @@
 import { Layouts } from '@/src/config';
+import useLoadDataStore from '@/src/store/load-data';
+import { useSegmentGroupStore } from '@/src/store/segmentGroups';
+import { usePolygonStore } from '@/src/store/tools/polygons';
+import { useRectangleStore } from '@/src/store/tools/rectangles';
+import { useRulerStore } from '@/src/store/tools/rulers';
+import { AnnotationToolStore } from '@/src/store/tools/useAnnotationTool';
+import useWindowingStore from '@/src/store/view-configs/windowing';
 import { useViewStore } from '@/src/store/views';
 import { zodEnumFromObjKeys } from '@/src/utils';
 import { z } from 'zod';
@@ -42,10 +49,18 @@ const io = z.object({
   setmentGroupExtension: z.string().default(''),
 });
 
+const windowing = z
+  .object({
+    level: z.number(),
+    width: z.number(),
+  })
+  .optional();
+
 export const config = z.object({
   layout,
   labels,
   io,
+  windowing,
 });
 
 export type Config = z.infer<typeof config>;
@@ -65,11 +80,20 @@ const applyLabels = (manifest: Config) => {
     return toolLabels;
   };
 
-  // TODO: implement this
-  const applyLabelsToStore = () => {};
+  const applyLabelsToStore = (
+    store: AnnotationToolStore,
+    maybeLabels: (typeof manifest.labels)[keyof typeof manifest.labels]
+  ) => {
+    const labelsOrFallback = defaultLabelsIfUndefined(maybeLabels);
+    if (!labelsOrFallback) return;
+    store.clearDefaultLabels();
+    store.mergeLabels(labelsOrFallback);
+  };
 
   const { rulerLabels, rectangleLabels, polygonLabels } = manifest.labels;
-  // TODO: applyLabelsToStore()
+  applyLabelsToStore(useRulerStore(), rulerLabels);
+  applyLabelsToStore(useRectangleStore(), rectangleLabels);
+  applyLabelsToStore(usePolygonStore(), polygonLabels);
 };
 
 const applyLayout = (manifest: Config) => {
@@ -83,12 +107,19 @@ const applyIO = (manifest: Config) => {
   if (!manifest.io) return;
 
   if (manifest.io.segmentGroupSaveFormat) {
-    // TODO: implement this
+    useSegmentGroupStore().saveFormat = manifest.io.segmentGroupSaveFormat;
   }
+  useLoadDataStore().segmentGroupExtension = manifest.io.setmentGroupExtension;
+};
+
+const applyWindowing = (manifest: Config) => {
+  if (!manifest.windowing) return;
+  useWindowingStore().runtimeConfigWindowLevel = manifest.windowing;
 };
 
 export const applyConfig = (manifest: Config) => {
   applyLayout(manifest);
   applyLabels(manifest);
   applyIO(manifest);
+  applyWindowing(manifest);
 };
