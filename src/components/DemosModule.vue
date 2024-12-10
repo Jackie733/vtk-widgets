@@ -1,5 +1,141 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { computed, ref, watch } from 'vue';
+import ImageDataBrowser from './ImageDataBrowser.vue';
+import SampleDataBrowser from './SampleDataBrowser.vue';
+import { useDataBrowserStore } from '../store/browser';
+import { useDatasetStore } from '../store/datasets';
+import { useDICOMStore } from '../store/dicom';
+import { useImageStore } from '../store/images';
+import { isRegularImage } from '../utils/dataSelection';
+import { removeFromArray } from '../utils';
+
+const SAMPLE_DATA_KEY = 'sampleData';
+const ANONYMOUS_DATA_KEY = 'anonymousData';
+const DICOM_WEB_KEY = 'dicomWeb';
+
+const dicomStore = useDICOMStore();
+const imageStore = useImageStore();
+const dataBrowserStore = useDataBrowserStore();
+const datasetStore = useDatasetStore();
+
+const patients = computed(() =>
+  Object.entries(dicomStore.patientInfo)
+    .map(([key, info]) => ({
+      key,
+      name: info.PatientName,
+      info,
+    }))
+    .sort((a, b) => (a.name < b.name ? -1 : 1))
+);
+
+const hasAnonymousImages = computed(
+  () => imageStore.idList.filter((id) => isRegularImage(id)).length > 0
+);
+
+const panels = ref<string[]>([SAMPLE_DATA_KEY]);
+
+watch([hasAnonymousImages, patients] as const, ([showAnonymous, patients_]) => {
+  const showPatients = patients_.length > 0;
+  if (showAnonymous) {
+    panels.value.push(ANONYMOUS_DATA_KEY);
+  }
+  if (showPatients) {
+    panels.value.push(...patients_.map((patient) => patient.key));
+  }
+  if (showAnonymous || showPatients) {
+    removeFromArray(panels.value, SAMPLE_DATA_KEY);
+  }
+});
+
+const hideSampleData = computed(() => dataBrowserStore.hideSampleData);
+
+const deletePatient = (key: string) => {
+  dicomStore.patientStudies[key]
+    .flatMap((study) => dicomStore.studyVolumes[study])
+    .forEach(datasetStore.remove);
+};
+</script>
 
 <template>
-  <div>Demo module</div>
+  <div id="data-module" class="mx-1 h-full">
+    <div id="data-panels">
+      <v-expansion-panels
+        v-model="panels"
+        multiple
+        variant="accordion"
+        class="no-panels"
+      >
+        <v-expansion-panel
+          v-if="hasAnonymousImages"
+          :value="ANONYMOUS_DATA_KEY"
+        >
+          <v-expansion-panel-title>
+            <v-icon class="collection-header-icon">mdi-image</v-icon>
+            <span>Anonymous</span>
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <image-data-browser />
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+
+        <v-expansion-panel
+          v-for="patient in patients"
+          :key="patient.key"
+          :value="patient.key"
+        >
+          <v-expansion-panel-title> </v-expansion-panel-title>
+        </v-expansion-panel>
+
+        <v-expansion-panel v-if="!hideSampleData" :value="SAMPLE_DATA_KEY">
+          <v-expansion-panel-title>
+            <v-icon class="collection-header-icon">mdi-card-bulleted</v-icon>
+            <span>Sample Data</span>
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <sample-data-browser />
+          </v-expansion-panel-text>
+        </v-expansion-panel>
+      </v-expansion-panels>
+    </div>
+  </div>
 </template>
+
+<style scoped>
+#data-module {
+  display: flex;
+  flex-flow: column;
+}
+
+#data-panels {
+  flex: 2;
+  overflow-y: auto;
+}
+
+.collection-header-icon {
+  flex: 0;
+  margin-right: 16px;
+}
+
+.patient-header {
+  display: flex;
+  flex-flow: row;
+  align-items: center;
+  width: 100%;
+  /* 24px accomodates the open/close icon indicator */
+  max-width: calc(100% - 24px);
+}
+
+.patient-header-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.empty-state {
+  display: none;
+}
+
+.no-panels:empty + .empty-state {
+  display: block;
+}
+</style>

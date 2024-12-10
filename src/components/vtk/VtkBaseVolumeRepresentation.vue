@@ -138,8 +138,9 @@ useVolumeColoringInitializer(viewID, imageID);
 useColoringEffect(coloringConfig, cfun, ofun);
 
 // cropping
+// TODO: implement cropping
 
-defineExpose(rep)
+defineExpose(rep);
 </script>
 
 <template>

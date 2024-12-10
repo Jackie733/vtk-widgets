@@ -1,24 +1,24 @@
+import {
+  DEFAULT_AMBIENT,
+  DEFAULT_DIFFUSE,
+  DEFAULT_SPECULAR,
+} from '@/src/store/view-configs/volume-coloring';
 import vtkDataArray from '@kitware/vtk.js/Common/Core/DataArray';
 import { getDiagonalLength } from '@kitware/vtk.js/Common/DataModel/BoundingBox';
 import vtkImageData from '@kitware/vtk.js/Common/DataModel/ImageData';
 import vtkRenderer from '@kitware/vtk.js/Rendering/Core/Renderer';
 import vtkVolumeMapper from '@kitware/vtk.js/Rendering/Core/VolumeMapper';
 import vtkVolumeProperty from '@kitware/vtk.js/Rendering/Core/VolumeProperty';
-import type { Vector3 } from '@kitware/vtk.js/types';
+import { Vector3 } from '@kitware/vtk.js/types';
 import { vec3 } from 'gl-matrix';
-import {
-  DEFAULT_AMBIENT,
-  DEFAULT_DIFFUSE,
-  DEFAULT_SPECULAR,
-} from '../store/view-configs/volume-coloring';
 
 /**
- * Sets the volume sampling distance
+ * Sets the volume sampling distance.
  * @param mapper
- * @param distance A value between 0 and 1
+ * @param distance A value betweeen 0 and 1.
  * @param imageData
  */
-export function setSampleDistance(
+export function setSamplingDistance(
   mapper: vtkVolumeMapper,
   distance: number,
   imageData: vtkImageData
@@ -37,7 +37,7 @@ export function setSampleDistance(
 /**
  * Sets the edge gradient.
  * @param property
- * @param edgeGradient A value between 0 and 1
+ * @param edgeGradient A value between 0 and 1.
  * @param dataArray
  */
 export function setEdgeGradient(
@@ -52,6 +52,7 @@ export function setEdgeGradient(
       // eslint-disable-next-line no-continue
       continue;
     }
+
     property.setUseGradientOpacity(component, true);
 
     const range = dataArray.getRange(component);
@@ -205,15 +206,15 @@ export function setCinematicVolumeScatter({
 export interface SetCinematicLocalAmbientOcclusionParameters {
   enabled: boolean;
   mapper: vtkVolumeMapper;
-  kernelRadius: number;
   kernelSize: number;
+  kernelRadius: number;
 }
 
 export function setCinematicLocalAmbientOcclusion({
   enabled,
   mapper,
-  kernelRadius,
   kernelSize,
+  kernelRadius,
 }: SetCinematicLocalAmbientOcclusionParameters) {
   if (enabled) {
     mapper.setLocalAmbientOcclusion(true);

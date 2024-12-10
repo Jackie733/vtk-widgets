@@ -6,6 +6,10 @@ import { defaultLPSDirections, getLPSDirections } from '../utils/lps';
 import { ImageMetadata } from '../types/image';
 import { useIdStore } from './id';
 import { removeFromArray } from '../utils';
+import { compareImageSpaces } from '../utils/imageSpace';
+import { DatasetType, StateFile } from '../io/state-file/schema';
+import { useFileStore } from './files';
+import { serializeData } from '../io/state-file/utils';
 
 export const defaultImageMetadata = () => ({
   name: '(none)',
@@ -71,6 +75,23 @@ export const useImageStore = defineStore('images', {
         delete this.metadata[id];
         removeFromArray(this.idList, id);
       }
+    },
+    checkAllImagesSameSpace() {
+      if (this.idList.length < 2) return false;
+
+      const dataFirst = this.dataIndex[this.idList[0]];
+      const allEqual = this.idList.slice(1).every((id) => {
+        return compareImageSpaces(this.dataIndex[id], dataFirst);
+      });
+      return allEqual;
+    },
+    async serialize(stateFile: StateFile) {
+      const fileStore = useFileStore();
+      // We want to filter out volume images (which are generated and don't have
+      // input files in fileStore with matching imageID.)
+      const dataIDs = this.idList.filter((id) => id in fileStore.byDataID);
+
+      await serializeData(stateFile, dataIDs, DatasetType.IMAGE);
     },
   },
 });

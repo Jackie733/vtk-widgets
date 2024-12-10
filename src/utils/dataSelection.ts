@@ -1,3 +1,4 @@
+import { useErrorMessage } from '../composables/useErrorMessage';
 import { getDisplayName, useDICOMStore } from '../store/dicom';
 import { useImageStore } from '../store/images';
 import { Maybe } from '../types';
@@ -22,9 +23,9 @@ export const getImage = async (imageID: string) => {
   const dicoms = useDICOMStore();
   if (isDicomImage(imageID)) {
     // ensure image data exists
-    // await useErrorMessage('Failed to build volume', () =>
-    // );
-    dicoms.buildVolume(imageID);
+    await useErrorMessage('Failed to build volume', () =>
+      dicoms.buildVolume(imageID)
+    );
   }
   return images.dataIndex[imageID];
 };

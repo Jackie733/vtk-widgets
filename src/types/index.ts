@@ -1,5 +1,16 @@
 export type Maybe<T> = T | null | undefined;
 
+export type SampleDataset = {
+  name: string;
+  filename: string;
+  description: string;
+  url: string;
+  image: string;
+  defaults?: {
+    colorPreset?: string;
+  };
+};
+
 export type FirstParam<T> = T extends (first: infer R, ...args: any[]) => any
   ? R
   : never;
