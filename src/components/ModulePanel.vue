@@ -1,13 +1,20 @@
 <template>
   <div class="h-full w-full flex flex-col">
     <div id="module-switcher">
-      <v-tabs v-model="activeTab" color="primary">
-        <v-tab v-for="item in modules" :key="item.name">
+      <v-tabs
+        id="module-switcher-tabs"
+        v-model="activeTab"
+        icons-and-text
+        show-arrows
+      >
+        <v-tab
+          v-for="item in modules"
+          :key="item.name"
+          :data-testid="`module-tab-${item.name}`"
+        >
           <div class="tab-content">
-            <v-icon :icon="`mdi-${item.icon}`"></v-icon>
-            <v-tooltip location="bottom" activator="parent">{{
-              item.name
-            }}</v-tooltip>
+            <span class="mb-0 mt-1 module-text">{{ item.name }}</span>
+            <v-icon>mdi-{{ item.icon }}</v-icon>
           </div>
         </v-tab>
       </v-tabs>
@@ -29,7 +36,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import type { Component } from 'vue';
-import MeasurementsModule from './MeasurementsModule.vue';
+import AnnotationsModule from './AnnotationsModule.vue';
 import SegmentsModule from './SegmentsModule.vue';
 import DemosModule from './DemosModule.vue';
 
@@ -46,9 +53,9 @@ const modules: Module[] = [
     component: DemosModule,
   },
   {
-    name: 'Measurements',
+    name: 'Annotations',
     icon: 'pencil',
-    component: MeasurementsModule,
+    component: AnnotationsModule,
   },
   {
     name: 'Segments',
@@ -64,13 +71,48 @@ const activeTab = ref(0);
 #module-switcher {
   display: relative;
   flex: 0 2;
+  /* roughly match vuetify's dark/light transition */
   transition: border-bottom 0.3s;
-  border-bottom: 1px solid rgb(var(--v-theme-on-surface-variant));
+  border-bottom: 2px solid rgb(var(--v-theme-on-surface-variant));
+}
+
+#close-btn {
+  position: absolute;
+  top: 1.5em;
+  left: 0.5em;
+  z-index: 10;
 }
 
 #module-container {
   position: relative;
   flex: 2;
   overflow: auto;
+}
+
+.module-text {
+  font-size: 0.6rem;
+  white-space: pre;
+}
+
+.tab-content {
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column-reverse;
+  height: 100%;
+  align-items: center;
+}
+
+#module-switcher-tabs :deep(.v-slide-group__content) {
+  justify-content: center;
+}
+
+#module-switcher-tabs
+  :deep(.v-slide-group__prev.v-slide-group__prev--disabled) {
+  visibility: hidden;
+}
+
+#module-switcher-tabs
+  :deep(.v-slide-group__next.v-slide-group__next--disabled) {
+  visibility: hidden;
 }
 </style>
