@@ -347,6 +347,53 @@ export const useDICOMStore = defineStore('dicom', {
       }
     },
 
+    // return an ITK image object
+    async getVolumeSlice(
+      volumeKey: string,
+      sliceIndex: number,
+      asThumbnail = false
+    ) {
+      const fileStore = useFileStore();
+
+      const cacheKey = imageCacheMultiKey(sliceIndex, asThumbnail);
+      if (
+        volumeKey in this.sliceData &&
+        cacheKey in this.sliceData[volumeKey]
+      ) {
+        return this.sliceData[volumeKey][cacheKey];
+      }
+
+      if (!(volumeKey in this.volumeInfo)) {
+        throw new Error(`Cannot find given volume key: ${volumeKey}`);
+      }
+      const volumeInfo = this.volumeInfo[volumeKey];
+      const numSlices = volumeInfo.NumberOfSlices;
+
+      if (sliceIndex < 1 || sliceIndex > numSlices) {
+        throw new Error(`Slice ${sliceIndex} is out of bounds`);
+      }
+
+      const volumeFiles = fileStore.getFiles(volumeKey);
+
+      if (!volumeFiles) {
+        throw new Error(`No files found for volume key: ${volumeKey}`);
+      }
+
+      const sliceFile = volumeFiles[sliceIndex - 1];
+
+      const itkImage = await DICOM.readVolumeSlice(sliceFile, asThumbnail);
+
+      this.sliceData[volumeKey][cacheKey] = itkImage;
+      return itkImage;
+    },
+
+    // returns an ITK image object
+    async getVolumeThumbnail(volumeKey: string) {
+      const { NumberOfSlices } = this.volumeInfo[volumeKey];
+      const middleSlice = Math.ceil(NumberOfSlices / 2);
+      return this.getVolumeSlice(volumeKey, middleSlice, true);
+    },
+
     async buildVolume(volumeKey: string, forceRebuild: boolean = false) {
       const imageStore = useImageStore();
 

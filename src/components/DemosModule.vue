@@ -2,6 +2,7 @@
 import { computed, ref, watch } from 'vue';
 import ImageDataBrowser from './ImageDataBrowser.vue';
 import SampleDataBrowser from './SampleDataBrowser.vue';
+import PatientBrowser from './PatientBrowser.vue';
 import { useDataBrowserStore } from '../store/browser';
 import { useDatasetStore } from '../store/datasets';
 import { useDICOMStore } from '../store/dicom';
@@ -11,7 +12,7 @@ import { removeFromArray } from '../utils';
 
 const SAMPLE_DATA_KEY = 'sampleData';
 const ANONYMOUS_DATA_KEY = 'anonymousData';
-const DICOM_WEB_KEY = 'dicomWeb';
+// const DICOM_WEB_KEY = 'dicomWeb';
 
 const dicomStore = useDICOMStore();
 const imageStore = useImageStore();
@@ -83,7 +84,35 @@ const deletePatient = (key: string) => {
           :key="patient.key"
           :value="patient.key"
         >
-          <v-expansion-panel-title> </v-expansion-panel-title>
+          <v-expansion-panel-title>
+            <div class="patient-header">
+              <v-icon class="collection-header-icon">mdi-account</v-icon>
+              <span class="patient-header-name" :title="patient.name">
+                {{ patient.name }}
+              </span>
+              <v-spacer />
+              <v-menu offset-x>
+                <template v-slot:activator="{ props }">
+                  <v-btn
+                    v-bind="props"
+                    variant="text"
+                    icon="mdi-dots-vertical"
+                    size="small"
+                    class="mr-3"
+                    @click.stop
+                  />
+                </template>
+                <v-list density="compact">
+                  <v-list-item @click.stop="deletePatient(patient.key)">
+                    <v-list-item-title>Delete Patient</v-list-item-title>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
+          </v-expansion-panel-title>
+          <v-expansion-panel-text>
+            <patient-browser :patient-key="patient.key" />
+          </v-expansion-panel-text>
         </v-expansion-panel>
 
         <v-expansion-panel v-if="!hideSampleData" :value="SAMPLE_DATA_KEY">
@@ -96,6 +125,7 @@ const deletePatient = (key: string) => {
           </v-expansion-panel-text>
         </v-expansion-panel>
       </v-expansion-panels>
+      <div class="empty-state ma-4 text-center">No data loaded</div>
     </div>
   </div>
 </template>
