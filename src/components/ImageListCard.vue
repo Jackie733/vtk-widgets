@@ -12,7 +12,7 @@
     >
       <v-container :title="htmlTitle">
         <v-row no-gutters class="flex-nowrap">
-          <v-col v-if="selectable" cols="1" class="flex items-center">
+          <v-col v-if="selectable" cols="1" class="d-flex align-center">
             <v-checkbox
               @click.stop
               :key="id"
@@ -47,6 +47,19 @@
   </v-hover>
 </template>
 
+<style scoped>
+.image-list-card-active {
+  background-color: rgb(var(--v-theme-selection-bg-color));
+  border-color: rgb(var(--v-theme-selection-border-color));
+}
+
+.image-container {
+  position: relative;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+</style>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import PersistentOverlay from './PersistentOverlay.vue';
@@ -75,16 +88,3 @@ export default defineComponent({
   components: { PersistentOverlay },
 });
 </script>
-
-<style scoped>
-.image-list-card-active {
-  background-color: rgb(var(--v-theme-selection-bg-color));
-  border-color: rgb(var(--v-theme-selection-border-color));
-}
-
-.image-container {
-  position: relative;
-  margin-left: 8px;
-  margin-right: 8px;
-}
-</style>

@@ -93,7 +93,7 @@ export default defineComponent({
       <v-row no-gutters justify="space-between" class="mb-2">
         <v-col cols="6" align-self="center">
           <v-checkbox
-            class="ml-3 items-center justify-center"
+            class="ml-3 align-center justify-center"
             :indeterminate="selectedSome && !selectedAll"
             label="Select All Studies"
             v-model="selectedAll"
@@ -102,7 +102,7 @@ export default defineComponent({
             hide-details
           />
         </v-col>
-        <v-col cols="6" align-self="center" class="flex justify-end mt-2">
+        <v-col cols="6" align-self="center" class="d-flex justify-end mt-2">
           <v-btn
             icon
             variant="text"

@@ -31,7 +31,7 @@ const hasData = computed(() => {
         app
         clipped
         touchless
-        width="360"
+        width="380"
         id="left-nav"
       >
         <ModulePanel v-if="viewStore.sideVisible" />

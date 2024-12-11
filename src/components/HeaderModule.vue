@@ -9,7 +9,6 @@ import useLoadDataStore from '../store/load-data';
 import ControlButton from './ControlButton.vue';
 import { DefaultLayoutName, Layouts } from '../config';
 import { useViewStore } from '../store/views';
-import { Layout } from '../types/layout';
 
 defineProps<{
   hasData: boolean;
@@ -51,10 +50,6 @@ const loadData = useThrottleFn(async () => {
   loadFiles([sampleFile]);
 }, 1000);
 
-const handleCommand = (command: Layout) => {
-  useViewStore().setLayout(command);
-};
-
 const toggleSide = () => {
   useViewStore().toggleSideVisible();
 };
@@ -75,20 +70,28 @@ const toggleSide = () => {
         >
           Sample
         </v-btn>
-        <el-dropdown placement="bottom" @command="handleCommand">
-          <ControlButton name="Layouts" icon="Layouts" />
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item
-                v-for="(value, key) in Layouts"
-                :class="{ 'bg-slate-600': layoutName === value.name }"
-                :key="key"
-                :command="value"
-                >{{ value.name }}</el-dropdown-item
-              >
-            </el-dropdown-menu>
+        <v-divider class="ms-3" inset vertical></v-divider>
+        <v-menu location="right" :close-on-content-click="true">
+          <template v-slot:activator="{ props }">
+            <ControlButton
+              v-bind="props"
+              name="Layouts"
+              icon="mdi-view-dashboard"
+            />
           </template>
-        </el-dropdown>
+          <v-card>
+            <v-card-text>
+              <v-radio-group v-model="layoutName" class="mt-0" hide-details>
+                <v-radio
+                  v-for="(value, key) in Layouts"
+                  :key="key"
+                  :label="value.name"
+                  :value="key"
+                />
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
+        </v-menu>
       </div>
       <ToolModule v-if="hasData"></ToolModule>
       <div>

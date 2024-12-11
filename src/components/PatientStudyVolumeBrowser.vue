@@ -1,21 +1,15 @@
 <script lang="ts">
+import { computed, defineComponent, reactive, toRefs, watch } from 'vue';
 import { Image } from 'itk-wasm';
-import {
-  computed,
-  defineComponent,
-  PropType,
-  reactive,
-  toRefs,
-  watch,
-} from 'vue';
+import type { PropType } from 'vue';
 import GroupableItem from '@/src/components/GroupableItem.vue';
-import PersistentOverlay from './PersistentOverlay.vue';
+import { DataSelection, isDicomImage } from '@/src/utils/dataSelection';
 import { getDisplayName, useDICOMStore } from '../store/dicom';
 import { useDatasetStore } from '../store/datasets';
-import { useLayersStore } from '../store/layers';
-import { DataSelection, isDicomImage } from '../utils/dataSelection';
-import { useMessageStore } from '../store/messages';
 import { useMultiSelection } from '../composables/useMultiSelection';
+import { useMessageStore } from '../store/messages';
+import { useLayersStore } from '../store/layers';
+import PersistentOverlay from './PersistentOverlay.vue';
 
 const canvas = document.createElement('canvas');
 
@@ -36,6 +30,7 @@ function itkImageToURI(itkImage: Image) {
   if (!itkBuf) {
     return '';
   }
+
   for (let i = 0; i < itkBuf.length; i += 1) {
     const byte = itkBuf[i] as number;
     // ABGR order
@@ -103,9 +98,11 @@ export default defineComponent({
         const layerable = volumeKey !== selectedVolumeKey && primarySelection;
         return {
           key: volumeKey,
+          // for thumbnailing
           cacheKey: dicomCacheKey(volumeKey),
           info: volumeInfo[volumeKey],
           name: getDisplayName(volumeInfo[volumeKey]),
+          // for UI selection
           selectionKey,
           isLayer,
           layerable,
@@ -122,6 +119,7 @@ export default defineComponent({
     });
 
     // --- thumbnails --- //
+
     const thumbnailCache = reactive<Record<string, Thumbnail>>({});
 
     watch(
@@ -353,3 +351,43 @@ export default defineComponent({
     </v-row>
   </v-container>
 </template>
+
+<style scoped>
+.volume-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  grid-auto-rows: 200px;
+  justify-content: center;
+}
+
+.volume-card {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.volume-card-active {
+  background-color: rgb(var(--v-theme-selection-bg-color));
+  border-color: rgb(var(--v-theme-selection-border-color));
+}
+
+.series-desc {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.series-selector {
+  max-width: 36px;
+}
+
+.thumbnail-container {
+  background-color: rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+}
+
+.dataset-menu {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+}
+</style>
