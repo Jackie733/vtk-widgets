@@ -55,3 +55,8 @@ export interface LayersConfig {
   opacityFunction: OpacityFunction;
   blendConfig: BlendConfig;
 }
+
+export interface SegmentGroupConfig {
+  outlineOpacity: number;
+  outlineThickness: number;
+}

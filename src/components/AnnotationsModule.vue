@@ -3,6 +3,7 @@ import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import ToolControls from './ToolControls.vue';
 import MeasurementsToolList from './MeasurementsToolList.vue';
+import SegmentGroupControls from './SegmentGroupControls.vue';
 import { AnnotationToolType, Tools } from '../store/tools/types';
 import { useToolStore } from '../store/tools';
 
@@ -61,6 +62,9 @@ watch(
     <v-window v-model="tab">
       <v-window-item value="measurements">
         <measurements-tool-list :tools="MeasurementTools" />
+      </v-window-item>
+      <v-window-item value="segmentGroups">
+        <segment-group-controls />
       </v-window-item>
     </v-window>
   </div>

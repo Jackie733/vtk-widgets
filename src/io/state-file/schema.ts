@@ -1,28 +1,31 @@
+import JSZip from 'jszip';
 import { z } from 'zod';
+import type { Vector3 } from '@kitware/vtk.js/types';
 import vtkPiecewiseFunctionProxy from '@kitware/vtk.js/Proxy/Core/PiecewiseFunctionProxy';
 import type {
   PiecewiseGaussian,
   PiecewiseNode,
 } from '@kitware/vtk.js/Proxy/Core/PiecewiseFunctionProxy';
-import { WLAutoRanges } from '@/src/constants';
-import { LayoutDirection } from '@/src/types/layout';
-import type { LPSAxis } from '@/src/types/lps';
-import type { FrameOfReference } from '@/src/utils/frameOfReference';
-import type { Vector3 } from '@kitware/vtk.js/types';
-import JSZip from 'jszip';
+
+import type { AnnotationTool, ToolID } from '@/src/types/annotation-tool';
 import { Tools as ToolsEnum } from '@/src/store/tools/types';
-import { AnnotationTool, ToolID } from '@/src/types/annotation-tool';
 import type { Ruler } from '@/src/types/ruler';
-import { Optional } from '@/src/types';
 import type { Rectangle } from '@/src/types/rectangle';
 import type { Polygon } from '@/src/types/polygon';
+import type { FrameOfReference } from '@/src/utils/frameOfReference';
+import type { Optional } from '@/src/types';
+// import type { LPSCroppingPlanes } from '@/src/types/crop';
+
 import type {
   CameraConfig,
   SliceConfig,
   WindowLevelConfig,
   LayersConfig,
+  SegmentGroupConfig,
   VolumeColorConfig,
 } from '../../store/view-configs/types';
+import type { LPSAxisDir, LPSAxis } from '../../types/lps';
+import { LayoutDirection } from '../../types/layout';
 import type {
   ColorBy,
   ColorTransferFunction,
@@ -31,9 +34,10 @@ import type {
   OpacityPoints,
   OpacityNodes,
   ColoringConfig,
-  BlendConfig,
   CVRConfig,
+  BlendConfig,
 } from '../../types/views';
+import { WLAutoRanges } from '../../constants';
 
 export enum DatasetType {
   DICOM = 'dicom',
@@ -57,6 +61,21 @@ const Dataset = z.object({
   type: DatasetTypeNative,
 });
 export type Dataset = z.infer<typeof Dataset>;
+
+const baseRemoteFileSchema = z.object({
+  archiveSrc: z.object({ path: z.string() }).optional(),
+  uriSrc: z.object({ uri: z.string(), name: z.string() }).optional(),
+});
+
+type RemoteFileType = z.infer<typeof baseRemoteFileSchema> & {
+  parent?: RemoteFileType;
+};
+
+// This is a serialized DataSource that has a UriSource ancestor.
+const RemoteFile: z.ZodType<RemoteFileType> = baseRemoteFileSchema.extend({
+  parent: z.lazy(() => RemoteFile.optional()),
+});
+export type RemoteFile = z.infer<typeof RemoteFile>;
 
 const LayoutDirectionNative = z.nativeEnum(LayoutDirection);
 
@@ -171,8 +190,8 @@ const CVRConfig = z.object({
   useVolumetricScatteringBlending: z.boolean(),
   volumetricScatteringBlending: z.number(),
   useLocalAmbientOcclusion: z.boolean(),
-  laoKernelRadius: z.number(),
   laoKernelSize: z.number(),
+  laoKernelRadius: z.number(),
   ambient: z.number(),
   diffuse: z.number(),
   specular: z.number(),
@@ -197,13 +216,20 @@ const LayersConfig = z.object({
   blendConfig: BlendConfig,
 }) satisfies z.ZodType<LayersConfig>;
 
+const SegmentGroupConfig = z.object({
+  outlineOpacity: z.number(),
+  outlineThickness: z.number(),
+}) satisfies z.ZodType<SegmentGroupConfig>;
+
 const ViewConfig = z.object({
   window: WindowLevelConfig.optional(),
   slice: SliceConfig.optional(),
   layers: LayersConfig.optional(),
+  segmentGroup: SegmentGroupConfig.optional(),
   camera: CameraConfig.optional(),
   volumeColorConfig: VolumeColorConfig.optional(),
 });
+
 export type ViewConfig = z.infer<typeof ViewConfig>;
 
 const View = z.object({
@@ -212,6 +238,7 @@ const View = z.object({
   props: z.record(z.any()),
   config: z.record(ViewConfig),
 });
+
 export type View = z.infer<typeof View>;
 
 const RGBAColor = z.tuple([z.number(), z.number(), z.number(), z.number()]);
@@ -237,6 +264,7 @@ export const LabelMap = z.object({
   path: z.string(),
   metadata: SegmentGroupMetadata,
 });
+
 export type LabelMap = z.infer<typeof LabelMap>;
 
 const LPSAxis = z.union([
@@ -263,10 +291,7 @@ const annotationTool = z.object({
 }) satisfies z.ZodType<AnnotationTool>;
 
 const makeToolEntry = <T extends z.ZodRawShape>(tool: z.ZodObject<T>) =>
-  z.object({
-    tools: z.array(tool),
-    labels: z.record(tool.partial()),
-  });
+  z.object({ tools: z.array(tool), labels: z.record(tool.partial()) });
 
 const Ruler = annotationTool.extend({
   firstPoint: Vector3,
@@ -291,6 +316,7 @@ const Polygons = makeToolEntry(Polygon);
 const Crosshairs = z.object({
   position: Vector3,
 });
+
 export type Crosshairs = z.infer<typeof Crosshairs>;
 
 const ToolsEnumNative = z.nativeEnum(ToolsEnum);
@@ -299,8 +325,16 @@ const Paint = z.object({
   activeSegmentGroupID: z.string().nullable(),
   activeSegment: z.number().nullish(),
   brushSize: z.number(),
-  labelmapOpacity: z.number().optional(),
+  labelmapOpacity: z.number().optional(), // labelmapOpacity now ignored.  Opacity per segment group via layerColoring store.
 });
+
+// const LPSCroppingPlanes = z.object({
+//   Sagittal: z.tuple([z.number(), z.number()]),
+//   Coronal: z.tuple([z.number(), z.number()]),
+//   Axial: z.tuple([z.number(), z.number()]),
+// }) satisfies z.ZodType<LPSCroppingPlanes>;
+
+// const Cropping = z.record(LPSCroppingPlanes);
 
 const Tools = z.object({
   rulers: Rulers.optional(),
@@ -308,8 +342,11 @@ const Tools = z.object({
   polygons: Polygons.optional(),
   crosshairs: Crosshairs,
   paint: Paint,
+  // crop: Cropping,
   current: ToolsEnumNative,
 });
+
+export type Tools = z.infer<typeof Tools>;
 
 export const ParentToLayers = z
   .object({
@@ -323,6 +360,7 @@ export type ParentToLayers = z.infer<typeof ParentToLayers>;
 export const ManifestSchema = z.object({
   version: z.string(),
   datasets: Dataset.array(),
+  remoteFiles: z.record(RemoteFile.array()),
   labelMaps: LabelMap.array(),
   tools: Tools,
   views: View.array(),
@@ -330,6 +368,7 @@ export const ManifestSchema = z.object({
   layout: Layout,
   parentToLayers: ParentToLayers,
 });
+
 export type Manifest = z.infer<typeof ManifestSchema>;
 
 export interface StateFile {

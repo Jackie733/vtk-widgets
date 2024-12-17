@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bounds, Vector3 } from '@kitware/vtk.js/types';
+import type { Bounds, Vector3 } from '@kitware/vtk.js/types';
 import { computed, inject, ref, toRaw, toRefs, watch } from 'vue';
 import vtkBoundingBox from '@kitware/vtk.js/Common/DataModel/BoundingBox';
 import { worldToSVG } from '@/src/utils/vtk-helpers';
