@@ -2,6 +2,7 @@
 import { ref, watch } from 'vue';
 import { storeToRefs } from 'pinia';
 import ToolControls from './ToolControls.vue';
+import MeasurementsToolList from './MeasurementsToolList.vue';
 import { AnnotationToolType, Tools } from '../store/tools/types';
 import { useToolStore } from '../store/tools';
 
@@ -52,7 +53,23 @@ watch(
 <template>
   <div class="overflow-y-auto mx-2 fill-height">
     <tool-controls />
+    <v-divider thickness="4" />
+    <v-tabs v-model="tab" align-tabs="center" density="compact" class="my-1">
+      <v-tab value="measurements" class="tab-header">Measurements</v-tab>
+      <v-tab value="segmentGroups" class="tab-header">Segment Groups</v-tab>
+    </v-tabs>
+    <v-window v-model="tab">
+      <v-window-item value="measurements">
+        <measurements-tool-list :tools="MeasurementTools" />
+      </v-window-item>
+    </v-window>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.tab-header {
+  font-size: 0.8rem;
+}
+</style>
+
+<style scoped src="./styles/annotations.css"></style>

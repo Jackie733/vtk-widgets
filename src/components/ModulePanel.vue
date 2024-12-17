@@ -34,11 +34,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { Component } from 'vue';
 import AnnotationsModule from './AnnotationsModule.vue';
 import SegmentsModule from './SegmentsModule.vue';
 import DemosModule from './DemosModule.vue';
+import { Tools } from '../store/tools/types';
+import { useToolStore } from '../store/tools';
 
 interface Module {
   name: string;
@@ -64,7 +66,24 @@ const modules: Module[] = [
   },
 ];
 
+const autoSwitchToAnnotationsTools = [
+  Tools.Rectangle,
+  Tools.Ruler,
+  Tools.Polygon,
+  Tools.Paint,
+];
+
 const activeTab = ref(0);
+
+const toolStore = useToolStore();
+watch(
+  () => toolStore.currentTool,
+  (newTool) => {
+    if (autoSwitchToAnnotationsTools.includes(newTool)) {
+      activeTab.value = 1;
+    }
+  }
+);
 </script>
 
 <style scoped>
